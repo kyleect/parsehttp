@@ -1,0 +1,17 @@
+
+[package]
+name = "http_lexer_project"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "http_lexer_project"
+path = "src/lib.rs"
+
+[dependencies]
+url = "2.5.7"
+bon = "3.9.1"
+
+[dev-dependencies]
+"pretty_assertions" = "1"
+rstest = "0.26.1"
