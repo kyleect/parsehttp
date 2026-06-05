@@ -17,55 +17,55 @@ mod request_lexer_tests {
             vec![
                 Token {
                     kind: RequestTokenKind::Method,
-                    span: Span::builder().span(0..3).line(1).column(4).build()
+                    span: Span::builder().range(0..3).line(1).column(4).build()
                 },
                 Token {
                     kind: RequestTokenKind::Space,
-                    span: Span::builder().span(3..4).line(1).column(5).build()
+                    span: Span::builder().range(3..4).line(1).column(5).build()
                 },
                 Token {
                     kind: RequestTokenKind::Uri,
-                    span: Span::builder().span(4..10).line(1).column(11).build()
+                    span: Span::builder().range(4..10).line(1).column(11).build()
                 },
                 Token {
                     kind: RequestTokenKind::Space,
-                    span: Span::builder().span(10..11).line(1).column(12).build()
+                    span: Span::builder().range(10..11).line(1).column(12).build()
                 },
                 Token {
                     kind: RequestTokenKind::Version,
-                    span: Span::builder().span(11..19).line(1).column(20).build()
+                    span: Span::builder().range(11..19).line(1).column(20).build()
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: Span::builder().span(19..21).line(1).column(22).build()
+                    span: Span::builder().range(19..21).line(1).column(22).build()
                 },
                 Token {
                     kind: RequestTokenKind::HeaderName,
-                    span: Span::builder().span(21..25).line(2).column(5).build()
+                    span: Span::builder().range(21..25).line(2).column(5).build()
                 },
                 Token {
                     kind: RequestTokenKind::Colon,
-                    span: Span::builder().span(25..26).line(2).column(6).build()
+                    span: Span::builder().range(25..26).line(2).column(6).build()
                 },
                 Token {
                     kind: RequestTokenKind::HeaderValue,
-                    span: Span::builder().span(27..38).line(2).column(18).build()
+                    span: Span::builder().range(27..38).line(2).column(18).build()
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: Span::builder().span(38..40).line(2).column(20).build()
+                    span: Span::builder().range(38..40).line(2).column(20).build()
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: Span::builder().span(40..42).line(3).column(3).build()
+                    span: Span::builder().range(40..42).line(3).column(3).build()
                 },
                 Token {
                     kind: RequestTokenKind::Body,
-                    span: Span::builder().span(42..46).line(4).column(1).build()
+                    span: Span::builder().range(42..46).line(4).column(1).build()
                 },
                 Token {
                     kind: RequestTokenKind::Eof,
-                    span: Span::builder().span(42..46).line(4).column(1).build()
+                    span: Span::builder().range(42..46).line(4).column(1).build()
                 },
             ],
             tokens
@@ -113,55 +113,55 @@ mod response_lexer_tests {
             vec![
                 Token {
                     kind: ResponseTokenKind::Version,
-                    span: Span::builder().span(0..8).line(1).column(9).build()
+                    span: Span::builder().range(0..8).line(1).column(9).build()
                 },
                 Token {
                     kind: ResponseTokenKind::Space,
-                    span: Span::builder().span(8..9).line(1).column(10).build()
+                    span: Span::builder().range(8..9).line(1).column(10).build()
                 },
                 Token {
                     kind: ResponseTokenKind::StatusCode,
-                    span: Span::builder().span(9..12).line(1).column(13).build()
+                    span: Span::builder().range(9..12).line(1).column(13).build()
                 },
                 Token {
                     kind: ResponseTokenKind::Space,
-                    span: Span::builder().span(12..13).line(1).column(14).build()
+                    span: Span::builder().range(12..13).line(1).column(14).build()
                 },
                 Token {
                     kind: ResponseTokenKind::ReasonPhrase,
-                    span: Span::builder().span(13..15).line(1).column(16).build()
+                    span: Span::builder().range(13..15).line(1).column(16).build()
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: Span::builder().span(15..17).line(1).column(18).build()
+                    span: Span::builder().range(15..17).line(1).column(18).build()
                 },
                 Token {
                     kind: ResponseTokenKind::HeaderName,
-                    span: Span::builder().span(17..29).line(2).column(13).build()
+                    span: Span::builder().range(17..29).line(2).column(13).build()
                 },
                 Token {
                     kind: ResponseTokenKind::Colon,
-                    span: Span::builder().span(29..30).line(2).column(14).build()
+                    span: Span::builder().range(29..30).line(2).column(14).build()
                 },
                 Token {
                     kind: ResponseTokenKind::HeaderValue,
-                    span: Span::builder().span(31..41).line(2).column(25).build()
+                    span: Span::builder().range(31..41).line(2).column(25).build()
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: Span::builder().span(41..43).line(2).column(27).build()
+                    span: Span::builder().range(41..43).line(2).column(27).build()
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: Span::builder().span(43..45).line(3).column(3).build()
+                    span: Span::builder().range(43..45).line(3).column(3).build()
                 },
                 Token {
                     kind: ResponseTokenKind::Body,
-                    span: Span::builder().span(45..50).line(4).column(1).build()
+                    span: Span::builder().range(45..50).line(4).column(1).build()
                 },
                 Token {
                     kind: ResponseTokenKind::Eof,
-                    span: Span::builder().span(45..50).line(4).column(1).build()
+                    span: Span::builder().range(45..50).line(4).column(1).build()
                 },
             ],
             tokens

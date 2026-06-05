@@ -13,10 +13,10 @@ pub struct Span {
 #[bon]
 impl Span {
     #[builder]
-    pub fn new(span: Range<u32>, line: u32, column: u32) -> Self {
+    pub fn new(range: Range<u32>, line: u32, column: u32) -> Self {
         Self {
-            start: span.start,
-            end: span.end,
+            start: range.start,
+            end: range.end,
             line,
             column,
         }

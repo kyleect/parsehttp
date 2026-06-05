@@ -4,6 +4,7 @@
 
 - Lex HTTP Request/Response messages into tokens.
 - Parse tokens into `HttpRequest` and `HttpResponse`.
+- Validates structure not values
 
 ## Usage
 
@@ -73,55 +74,55 @@ assert_eq!(
     vec![
         Token {
             kind: RequestTokenKind::Method,
-            span: Span::builder().span(0..3).line(1).column(4).build()
+            span: Span::builder().range(0..3).line(1).column(4).build()
         },
         Token {
             kind: RequestTokenKind::Space,
-            span: Span::builder().span(3..4).line(1).column(5).build()
+            span: Span::builder().range(3..4).line(1).column(5).build()
         },
         Token {
             kind: RequestTokenKind::Uri,
-            span: Span::builder().span(4..10).line(1).column(11).build()
+            span: Span::builder().range(4..10).line(1).column(11).build()
         },
         Token {
             kind: RequestTokenKind::Space,
-            span: Span::builder().span(10..11).line(1).column(12).build()
+            span: Span::builder().range(10..11).line(1).column(12).build()
         },
         Token {
             kind: RequestTokenKind::Version,
-            span: Span::builder().span(11..19).line(1).column(20).build()
+            span: Span::builder().range(11..19).line(1).column(20).build()
         },
         Token {
             kind: RequestTokenKind::CrLf,
-            span: Span::builder().span(19..21).line(1).column(22).build()
+            span: Span::builder().range(19..21).line(1).column(22).build()
         },
         Token {
             kind: RequestTokenKind::HeaderName,
-            span: Span::builder().span(21..25).line(2).column(5).build()
+            span: Span::builder().range(21..25).line(2).column(5).build()
         },
         Token {
             kind: RequestTokenKind::Colon,
-            span: Span::builder().span(25..26).line(2).column(6).build()
+            span: Span::builder().range(25..26).line(2).column(6).build()
         },
         Token {
             kind: RequestTokenKind::HeaderValue,
-            span: Span::builder().span(27..38).line(2).column(18).build()
+            span: Span::builder().range(27..38).line(2).column(18).build()
         },
         Token {
             kind: RequestTokenKind::CrLf,
-            span: Span::builder().span(38..40).line(2).column(20).build()
+            span: Span::builder().range(38..40).line(2).column(20).build()
         },
         Token {
             kind: RequestTokenKind::CrLf,
-            span: Span::builder().span(40..42).line(3).column(3).build()
+            span: Span::builder().range(40..42).line(3).column(3).build()
         },
         Token {
             kind: RequestTokenKind::Body,
-            span: Span::builder().span(42..46).line(4).column(1).build()
+            span: Span::builder().range(42..46).line(4).column(1).build()
         },
         Token {
             kind: RequestTokenKind::Eof,
-            span: Span::builder().span(42..46).line(4).column(1).build()
+            span: Span::builder().range(42..46).line(4).column(1).build()
         },
     ],
     tokens
