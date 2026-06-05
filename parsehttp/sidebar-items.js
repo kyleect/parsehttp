@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HttpMethod","RequestTokenKind","ResponseTokenKind"],"fn":["lex_request","lex_response","parse_request","parse_response"],"struct":["HttpHeader","HttpRequest","HttpResponse","HttpStatusCode","HttpUri","HttpVersion","Span","Token"]};
