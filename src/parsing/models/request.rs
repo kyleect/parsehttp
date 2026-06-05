@@ -153,7 +153,7 @@ impl Display for HttpRequest {
 
         let the_rest = match (&headers, &body) {
             (Some(headers), Some(body)) => format!("{headers}\r\n{body}"),
-            (Some(headers), None) => format!("{}\r\n", headers.to_string()),
+            (Some(headers), None) => format!("{}\r\n", headers),
             (None, Some(body)) => format!("\r\n{body}"),
             (None, None) => String::new(),
         };

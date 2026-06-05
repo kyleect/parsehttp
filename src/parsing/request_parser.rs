@@ -17,7 +17,7 @@ pub struct HttpRequestParser<'input> {
 impl<'input> HttpRequestParser<'input> {
     pub fn new(source: &'input str) -> Self {
         Self {
-            source: source,
+            source,
             tokens: vec![],
             current: 0,
         }
@@ -50,11 +50,11 @@ impl<'input> HttpRequestParser<'input> {
     }
 
     fn peek(&self) -> Option<&Token<RequestTokenKind>> {
-        return self.tokens.get(self.current);
+        self.tokens.get(self.current)
     }
 
     fn prev(&self) -> Option<&Token<RequestTokenKind>> {
-        return self.tokens.get(self.current - 1);
+        self.tokens.get(self.current - 1)
     }
 
     fn is_at_end(&self) -> bool {
@@ -63,7 +63,7 @@ impl<'input> HttpRequestParser<'input> {
 
     fn parse_method(&mut self) -> Result<HttpMethod, ParsingError> {
         let token = match self.peek() {
-            Some(t) => t.clone(),
+            Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
         };
 
@@ -84,7 +84,7 @@ impl<'input> HttpRequestParser<'input> {
 
     fn parse_uri(&mut self) -> Result<Uri, ParsingError> {
         let token = match self.peek() {
-            Some(t) => t.clone(),
+            Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
         };
         let lexme = token.span.slice(self.source);
@@ -103,7 +103,7 @@ impl<'input> HttpRequestParser<'input> {
 
     fn parse_version(&mut self) -> Result<HttpVersion, ParsingError> {
         let token = match self.peek() {
-            Some(t) => t.clone(),
+            Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
         };
 
@@ -124,7 +124,7 @@ impl<'input> HttpRequestParser<'input> {
 
     fn parse_header_name(&mut self) -> Result<Token<RequestTokenKind>, ParsingError> {
         let name_tok = match self.peek() {
-            Some(t) => t.clone(),
+            Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
         };
 
@@ -145,7 +145,7 @@ impl<'input> HttpRequestParser<'input> {
 
     fn parse_header_value(&mut self) -> Result<Token<RequestTokenKind>, ParsingError> {
         let value_tok = match self.peek() {
-            Some(t) => t.clone(),
+            Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
         };
         if value_tok.kind != RequestTokenKind::HeaderValue {
@@ -193,7 +193,7 @@ impl<'input> HttpRequestParser<'input> {
 
     fn parse_body(&mut self) -> Result<Option<String>, ParsingError> {
         let token = match self.peek() {
-            Some(t) => t.clone(),
+            Some(token) => *token,
             None => return Ok(None),
         };
 
@@ -250,8 +250,8 @@ impl<'input> Parser<RequestTokenKind, HttpRequest> for HttpRequestParser<'input>
             uri,
             method,
             http_version,
-            headers: headers,
-            body: body,
+            headers,
+            body,
         };
 
         Ok(request)
