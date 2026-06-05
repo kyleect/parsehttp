@@ -1,5 +1,7 @@
 # parsehttp
 
+[![build-artifacts](https://github.com/kyleect/parsehttp/actions/workflows/build-artifacts.yml/badge.svg)](https://github.com/kyleect/parsehttp/actions/workflows/build-artifacts.yml)
+
 ## What It Does
 
 - Lex HTTP Request/Response messages into tokens.
