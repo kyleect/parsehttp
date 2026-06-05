@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::{
     lexing::{lex_errors::LexError, lexer::Lexer, tokens::Token},
     span::Span,
@@ -17,6 +19,25 @@ pub enum ResponseTokenKind {
     CrLf,
     Body,
     Eof,
+}
+
+impl Display for ResponseTokenKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let string = match self {
+            ResponseTokenKind::Version => "HttpVersion",
+            ResponseTokenKind::StatusCode => "StatusCode",
+            ResponseTokenKind::ReasonPhrase => "ReasonPhrase",
+            ResponseTokenKind::HeaderName => "HeaderName",
+            ResponseTokenKind::HeaderValue => "HeaderValue",
+            ResponseTokenKind::Colon => ":",
+            ResponseTokenKind::Space => "Space",
+            ResponseTokenKind::CrLf => "CrLf",
+            ResponseTokenKind::Body => "Body",
+            ResponseTokenKind::Eof => "Eof",
+        };
+
+        write!(f, "{string}")
+    }
 }
 
 pub struct HttpResponseLexer<'a> {

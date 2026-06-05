@@ -20,6 +20,10 @@ pub fn lex_request(src: &str) -> Result<Vec<Token<RequestTokenKind>>, LexError> 
     HttpRequestLexer::new(src).lex()
 }
 
+pub fn lex_response(src: &str) -> Result<Vec<Token<ResponseTokenKind>>, LexError> {
+    HttpResponseLexer::new(src).lex()
+}
+
 pub fn parse_request(
     src: &str,
     tokens: Vec<Token<RequestTokenKind>>,
