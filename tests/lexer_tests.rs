@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod request_lexer_tests {
-    use parsehttp::{lex_request, RequestTokenKind, Span, Token};
+    use parsehttp::{lex_request, span, span_position, RequestTokenKind, Token};
     use pretty_assertions::assert_eq;
 
     #[test]
     fn lex_http_request() {
         let src = "\
-            GET /hello HTTP/1.1\r\n\
+            POST / HTTP/1.1\r\n\
             Host: example.com\r\n\
             \r\n\
             body";
@@ -17,73 +17,73 @@ mod request_lexer_tests {
             vec![
                 Token {
                     kind: RequestTokenKind::Method,
-                    span: Span::builder().range(0..3).line(1).column(4).build()
+                    span: span(span_position(0, 1, 1), span_position(4, 1, 5)),
                 },
                 Token {
                     kind: RequestTokenKind::Space,
-                    span: Span::builder().range(3..4).line(1).column(5).build()
+                    span: span(span_position(4, 1, 5), span_position(5, 1, 6)),
                 },
                 Token {
                     kind: RequestTokenKind::Uri,
-                    span: Span::builder().range(4..10).line(1).column(11).build()
+                    span: span(span_position(5, 1, 6), span_position(6, 1, 7)),
                 },
                 Token {
                     kind: RequestTokenKind::Space,
-                    span: Span::builder().range(10..11).line(1).column(12).build()
+                    span: span(span_position(6, 1, 7), span_position(7, 1, 8)),
                 },
                 Token {
                     kind: RequestTokenKind::Version,
-                    span: Span::builder().range(11..19).line(1).column(20).build()
+                    span: span(span_position(7, 1, 8), span_position(15, 1, 16)),
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: Span::builder().range(19..21).line(1).column(22).build()
+                    span: span(span_position(15, 1, 16), span_position(17, 1, 18)),
                 },
                 Token {
                     kind: RequestTokenKind::HeaderName,
-                    span: Span::builder().range(21..25).line(2).column(5).build()
+                    span: span(span_position(17, 2, 1), span_position(21, 2, 5)),
                 },
                 Token {
                     kind: RequestTokenKind::Colon,
-                    span: Span::builder().range(25..26).line(2).column(6).build()
+                    span: span(span_position(21, 2, 5), span_position(22, 2, 6)),
                 },
                 Token {
                     kind: RequestTokenKind::HeaderValue,
-                    span: Span::builder().range(27..38).line(2).column(18).build()
+                    span: span(span_position(23, 2, 7), span_position(34, 2, 18)),
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: Span::builder().range(38..40).line(2).column(20).build()
+                    span: span(span_position(34, 2, 18), span_position(36, 2, 20)),
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: Span::builder().range(40..42).line(3).column(3).build()
+                    span: span(span_position(36, 3, 1), span_position(38, 3, 3)),
                 },
                 Token {
                     kind: RequestTokenKind::Body,
-                    span: Span::builder().range(42..46).line(4).column(1).build()
+                    span: span(span_position(38, 4, 1), span_position(42, 4, 1)),
                 },
                 Token {
                     kind: RequestTokenKind::Eof,
-                    span: Span::builder().range(42..46).line(4).column(1).build()
+                    span: span(span_position(38, 4, 1), span_position(42, 4, 1)),
                 },
             ],
-            tokens
+            tokens,
         );
 
-        assert_eq!(tokens[0].span.slice(src), "GET");
-        assert_eq!(tokens[1].span.slice(src), " ");
-        assert_eq!(tokens[2].span.slice(src), "/hello");
-        assert_eq!(tokens[3].span.slice(src), " ");
-        assert_eq!(tokens[4].span.slice(src), "HTTP/1.1");
-        assert_eq!(tokens[5].span.slice(src), "\r\n");
-        assert_eq!(tokens[6].span.slice(src), "Host");
-        assert_eq!(tokens[7].span.slice(src), ":");
-        assert_eq!(tokens[8].span.slice(src), "example.com");
-        assert_eq!(tokens[9].span.slice(src), "\r\n");
-        assert_eq!(tokens[10].span.slice(src), "\r\n");
-        assert_eq!(tokens[11].span.slice(src), "body");
-        assert_eq!(tokens[12].span.slice(src), "body");
+        assert_eq!(tokens[0].slice(src), "POST");
+        assert_eq!(tokens[1].slice(src), " ");
+        assert_eq!(tokens[2].slice(src), "/");
+        assert_eq!(tokens[3].slice(src), " ");
+        assert_eq!(tokens[4].slice(src), "HTTP/1.1");
+        assert_eq!(tokens[5].slice(src), "\r\n");
+        assert_eq!(tokens[6].slice(src), "Host");
+        assert_eq!(tokens[7].slice(src), ":");
+        assert_eq!(tokens[8].slice(src), "example.com");
+        assert_eq!(tokens[9].slice(src), "\r\n");
+        assert_eq!(tokens[10].slice(src), "\r\n");
+        assert_eq!(tokens[11].slice(src), "body");
+        assert_eq!(tokens[12].slice(src), "body"); // Eof
 
         let body = tokens
             .into_iter()
@@ -96,7 +96,7 @@ mod request_lexer_tests {
 
 #[cfg(test)]
 mod response_lexer_tests {
-    use parsehttp::{lex_response, ResponseTokenKind, Span, Token};
+    use parsehttp::{lex_response, span, span_position, ResponseTokenKind, Token};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -113,72 +113,72 @@ mod response_lexer_tests {
             vec![
                 Token {
                     kind: ResponseTokenKind::Version,
-                    span: Span::builder().range(0..8).line(1).column(9).build()
+                    span: span(span_position(0, 1, 1), span_position(8, 1, 9)),
                 },
                 Token {
                     kind: ResponseTokenKind::Space,
-                    span: Span::builder().range(8..9).line(1).column(10).build()
+                    span: span(span_position(8, 1, 9), span_position(9, 1, 10)),
                 },
                 Token {
                     kind: ResponseTokenKind::StatusCode,
-                    span: Span::builder().range(9..12).line(1).column(13).build()
+                    span: span(span_position(9, 1, 10), span_position(12, 1, 13)),
                 },
                 Token {
                     kind: ResponseTokenKind::Space,
-                    span: Span::builder().range(12..13).line(1).column(14).build()
+                    span: span(span_position(12, 1, 13), span_position(13, 1, 14)),
                 },
                 Token {
                     kind: ResponseTokenKind::ReasonPhrase,
-                    span: Span::builder().range(13..15).line(1).column(16).build()
+                    span: span(span_position(13, 1, 14), span_position(15, 1, 16)),
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: Span::builder().range(15..17).line(1).column(18).build()
+                    span: span(span_position(15, 1, 16), span_position(17, 1, 18)),
                 },
                 Token {
                     kind: ResponseTokenKind::HeaderName,
-                    span: Span::builder().range(17..29).line(2).column(13).build()
+                    span: span(span_position(17, 2, 1), span_position(29, 2, 13)),
                 },
                 Token {
                     kind: ResponseTokenKind::Colon,
-                    span: Span::builder().range(29..30).line(2).column(14).build()
+                    span: span(span_position(29, 2, 13), span_position(30, 2, 14)),
                 },
                 Token {
                     kind: ResponseTokenKind::HeaderValue,
-                    span: Span::builder().range(31..41).line(2).column(25).build()
+                    span: span(span_position(31, 2, 15), span_position(41, 2, 25)),
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: Span::builder().range(41..43).line(2).column(27).build()
+                    span: span(span_position(41, 2, 25), span_position(43, 2, 27)),
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: Span::builder().range(43..45).line(3).column(3).build()
+                    span: span(span_position(43, 3, 1), span_position(45, 3, 3)),
                 },
                 Token {
                     kind: ResponseTokenKind::Body,
-                    span: Span::builder().range(45..50).line(4).column(1).build()
+                    span: span(span_position(45, 4, 1), span_position(50, 4, 1)),
                 },
                 Token {
                     kind: ResponseTokenKind::Eof,
-                    span: Span::builder().range(45..50).line(4).column(1).build()
+                    span: span(span_position(45, 4, 1), span_position(50, 4, 1)),
                 },
             ],
             tokens
         );
 
-        assert_eq!(tokens[0].span.slice(src), "HTTP/1.1");
-        assert_eq!(tokens[1].span.slice(src), " ");
-        assert_eq!(tokens[2].span.slice(src), "200");
-        assert_eq!(tokens[3].span.slice(src), " ");
-        assert_eq!(tokens[4].span.slice(src), "OK");
-        assert_eq!(tokens[5].span.slice(src), "\r\n");
-        assert_eq!(tokens[6].span.slice(src), "Content-Type");
-        assert_eq!(tokens[7].span.slice(src), ":");
-        assert_eq!(tokens[8].span.slice(src), "text/plain");
-        assert_eq!(tokens[9].span.slice(src), "\r\n");
-        assert_eq!(tokens[10].span.slice(src), "\r\n");
-        assert_eq!(tokens[11].span.slice(src), "hello");
+        assert_eq!(tokens[0].slice(src), "HTTP/1.1");
+        assert_eq!(tokens[1].slice(src), " ");
+        assert_eq!(tokens[2].slice(src), "200");
+        assert_eq!(tokens[3].slice(src), " ");
+        assert_eq!(tokens[4].slice(src), "OK");
+        assert_eq!(tokens[5].slice(src), "\r\n");
+        assert_eq!(tokens[6].slice(src), "Content-Type");
+        assert_eq!(tokens[7].slice(src), ":");
+        assert_eq!(tokens[8].slice(src), "text/plain");
+        assert_eq!(tokens[9].slice(src), "\r\n");
+        assert_eq!(tokens[10].slice(src), "\r\n");
+        assert_eq!(tokens[11].slice(src), "hello"); // Eof
 
         let body = tokens
             .into_iter()

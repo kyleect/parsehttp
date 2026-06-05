@@ -9,6 +9,14 @@ fn main() {
     let tokens = lex_request(&contents).expect("should lex");
 
     for token in tokens {
-        println!("{}", token.kind);
+        println!(
+            "{} {}..{} @ {}:{} | lenght: {}",
+            token.kind,
+            token.span.start.index,
+            token.span.end.index,
+            token.span.start.line,
+            token.span.start.column,
+            token.span.end.index - token.span.start.index
+        );
     }
 }

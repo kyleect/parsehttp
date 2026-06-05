@@ -23,7 +23,7 @@ pub use crate::parsing::models::HttpResponse;
 pub use crate::parsing::models::HttpStatusCode;
 pub use crate::parsing::models::HttpUri;
 pub use crate::parsing::models::HttpVersion;
-pub use crate::span::Span;
+pub use crate::span::{span, span_position, Span};
 
 /// Lex a HTTP request from a string in to tokens
 pub fn lex_request(src: &str) -> Result<Vec<Token<RequestTokenKind>>, LexError> {

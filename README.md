@@ -62,87 +62,31 @@ cargo run --example request_to_json --features json ./requests/post.http > jq .h
 #### Lexing
 
 ```rust
-use parsehttp::{lex_request, RequestTokenKind, Span, Token};
+use parsehttp::{lex_request, span, span_position, RequestTokenKind, Token};
 
 let src = "\
-    GET /hello HTTP/1.1\r\n\
+    POST / HTTP/1.1\r\n\
     Host: example.com\r\n\
     \r\n\
     body";
 
-let tokens: Vec<Token<RequestTokenKind>> = lex_request(src).expect("should produce tokens");
+let tokens: Vec<Token<RequestTokenKind>> = lex_request(src).unwrap();
 
-assert_eq!(
-    vec![
-        Token {
-            kind: RequestTokenKind::Method,
-            span: Span::builder().range(0..3).line(1).column(4).build()
-        },
-        Token {
-            kind: RequestTokenKind::Space,
-            span: Span::builder().range(3..4).line(1).column(5).build()
-        },
-        Token {
-            kind: RequestTokenKind::Uri,
-            span: Span::builder().range(4..10).line(1).column(11).build()
-        },
-        Token {
-            kind: RequestTokenKind::Space,
-            span: Span::builder().range(10..11).line(1).column(12).build()
-        },
-        Token {
-            kind: RequestTokenKind::Version,
-            span: Span::builder().range(11..19).line(1).column(20).build()
-        },
-        Token {
-            kind: RequestTokenKind::CrLf,
-            span: Span::builder().range(19..21).line(1).column(22).build()
-        },
-        Token {
-            kind: RequestTokenKind::HeaderName,
-            span: Span::builder().range(21..25).line(2).column(5).build()
-        },
-        Token {
-            kind: RequestTokenKind::Colon,
-            span: Span::builder().range(25..26).line(2).column(6).build()
-        },
-        Token {
-            kind: RequestTokenKind::HeaderValue,
-            span: Span::builder().range(27..38).line(2).column(18).build()
-        },
-        Token {
-            kind: RequestTokenKind::CrLf,
-            span: Span::builder().range(38..40).line(2).column(20).build()
-        },
-        Token {
-            kind: RequestTokenKind::CrLf,
-            span: Span::builder().range(40..42).line(3).column(3).build()
-        },
-        Token {
-            kind: RequestTokenKind::Body,
-            span: Span::builder().range(42..46).line(4).column(1).build()
-        },
-        Token {
-            kind: RequestTokenKind::Eof,
-            span: Span::builder().range(42..46).line(4).column(1).build()
-        },
-    ],
-    tokens
-);
+// Getting token lexmes
 
-assert_eq!(tokens[0].span.slice(src), "GET");
-assert_eq!(tokens[1].span.slice(src), " ");
-assert_eq!(tokens[2].span.slice(src), "/hello");
-assert_eq!(tokens[3].span.slice(src), " ");
-assert_eq!(tokens[4].span.slice(src), "HTTP/1.1");
-assert_eq!(tokens[5].span.slice(src), "\r\n");
-assert_eq!(tokens[6].span.slice(src), "Host");
-assert_eq!(tokens[7].span.slice(src), ":");
-assert_eq!(tokens[8].span.slice(src), "example.com");
-assert_eq!(tokens[9].span.slice(src), "\r\n");
-assert_eq!(tokens[10].span.slice(src), "\r\n");
-assert_eq!(tokens[11].span.slice(src), "body");
-assert_eq!(tokens[12].span.slice(src), "body");
+assert_eq!(tokens[0].slice(src), "POST");
+assert_eq!(tokens[1].slice(src), " ");
+assert_eq!(tokens[2].slice(src), "/");
+assert_eq!(tokens[3].slice(src), " ");
+assert_eq!(tokens[4].slice(src), "HTTP/1.1");
+assert_eq!(tokens[5].slice(src), "\r\n");
+assert_eq!(tokens[6].slice(src), "Host");
+assert_eq!(tokens[7].slice(src), ":");
+assert_eq!(tokens[8].slice(src), "example.com");
+assert_eq!(tokens[9].slice(src), "\r\n");
+assert_eq!(tokens[10].slice(src), "\r\n");
+assert_eq!(tokens[11].slice(src), "body");
+assert_eq!(tokens[12].slice(src), "body"); // Eof
 
 let body = tokens
     .into_iter()
@@ -150,6 +94,66 @@ let body = tokens
     .unwrap();
 
 assert_eq!(body.span.slice(src), "body");
+
+// A token's span, line, and column information
+
+assert_eq!(
+    vec![
+        Token {
+            kind: RequestTokenKind::Method,
+            span: span(span_position(0, 1, 1), span_position(4, 1, 5)),
+        },
+        Token {
+            kind: RequestTokenKind::Space,
+            span: span(span_position(4, 1, 5), span_position(5, 1, 6)),
+        },
+        Token {
+            kind: RequestTokenKind::Uri,
+            span: span(span_position(5, 1, 6), span_position(6, 1, 7)),
+        },
+        Token {
+            kind: RequestTokenKind::Space,
+            span: span(span_position(6, 1, 7), span_position(7, 1, 8)),
+        },
+        Token {
+            kind: RequestTokenKind::Version,
+            span: span(span_position(7, 1, 8), span_position(15, 1, 16)),
+        },
+        Token {
+            kind: RequestTokenKind::CrLf,
+            span: span(span_position(15, 1, 16), span_position(17, 1, 18)),
+        },
+        Token {
+            kind: RequestTokenKind::HeaderName,
+            span: span(span_position(17, 2, 1), span_position(21, 2, 5)),
+        },
+        Token {
+            kind: RequestTokenKind::Colon,
+            span: span(span_position(21, 2, 5), span_position(22, 2, 6)),
+        },
+        Token {
+            kind: RequestTokenKind::HeaderValue,
+            span: span(span_position(23, 2, 7), span_position(34, 2, 18)),
+        },
+        Token {
+            kind: RequestTokenKind::CrLf,
+            span: span(span_position(34, 2, 18), span_position(36, 2, 20)),
+        },
+        Token {
+            kind: RequestTokenKind::CrLf,
+            span: span(span_position(36, 3, 1), span_position(38, 3, 3)),
+        },
+        Token {
+            kind: RequestTokenKind::Body,
+            span: span(span_position(38, 4, 1), span_position(42, 4, 1)),
+        },
+        Token {
+            kind: RequestTokenKind::Eof,
+            span: span(span_position(38, 4, 1), span_position(42, 4, 1)),
+        },
+    ],
+    tokens,
+);
 ```
 
 #### Parsing

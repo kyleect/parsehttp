@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::{
     lexing::{lex_errors::LexError, lexer::Lexer, tokens::Token},
-    span::Span,
+    span::{span_position, Span},
 };
 
 /// The different kinds of tokens for HTTP requests
@@ -43,8 +43,10 @@ pub struct HttpRequestLexer<'a> {
     bytes: &'a [u8],
     start: usize,
     current: usize,
-    line: u32,
-    column: u32,
+    start_line: usize,
+    start_column: usize,
+    current_line: usize,
+    current_column: usize,
 }
 
 impl<'a> HttpRequestLexer<'a> {
@@ -53,8 +55,10 @@ impl<'a> HttpRequestLexer<'a> {
             bytes: src.as_bytes(),
             start: 0,
             current: 0,
-            line: 1,
-            column: 1,
+            start_line: 1,
+            start_column: 1,
+            current_line: 1,
+            current_column: 1,
         }
     }
 
@@ -84,6 +88,9 @@ impl<'a> HttpRequestLexer<'a> {
             self.consume_until_byte(tokens, b':', RequestTokenKind::HeaderName)?;
 
             self.start = self.current;
+            self.start_column = self.current_column;
+            self.start_line = self.current_line;
+
             self.consume_byte(b':')?;
             tokens.push(self.token(RequestTokenKind::Colon));
 
@@ -103,6 +110,8 @@ impl<'a> HttpRequestLexer<'a> {
         }
 
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
         self.current = self.bytes.len();
 
         tokens.push(self.token(RequestTokenKind::Body));
@@ -116,6 +125,8 @@ impl<'a> HttpRequestLexer<'a> {
         kind: RequestTokenKind,
     ) -> Result<(), LexError> {
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
 
         while let Some(b) = self.peek() {
             if b == b' ' {
@@ -136,6 +147,8 @@ impl<'a> HttpRequestLexer<'a> {
         kind: RequestTokenKind,
     ) -> Result<(), LexError> {
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
 
         while !self.check_crlf() {
             if self.is_at_end() {
@@ -157,6 +170,8 @@ impl<'a> HttpRequestLexer<'a> {
         kind: RequestTokenKind,
     ) -> Result<(), LexError> {
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
 
         while let Some(b) = self.peek() {
             if b == stop {
@@ -173,6 +188,8 @@ impl<'a> HttpRequestLexer<'a> {
 
     fn consume_space(&mut self, tokens: &mut Vec<Token<RequestTokenKind>>) -> Result<(), LexError> {
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
 
         self.consume_byte(b' ')?;
 
@@ -183,14 +200,16 @@ impl<'a> HttpRequestLexer<'a> {
 
     fn consume_crlf(&mut self, tokens: &mut Vec<Token<RequestTokenKind>>) -> Result<(), LexError> {
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
 
         self.consume_byte(b'\r')?;
         self.consume_byte(b'\n')?;
 
         tokens.push(self.token(RequestTokenKind::CrLf));
 
-        self.line += 1;
-        self.column = 1;
+        self.current_line += 1;
+        self.current_column = 1;
 
         Ok(())
     }
@@ -201,6 +220,8 @@ impl<'a> HttpRequestLexer<'a> {
         }
 
         self.start = self.current;
+        self.start_column = self.current_column;
+        self.start_line = self.current_line;
     }
 
     fn consume_byte(&mut self, expected: u8) -> Result<(), LexError> {
@@ -209,7 +230,9 @@ impl<'a> HttpRequestLexer<'a> {
                 self.advance();
                 Ok(())
             }
-            _ => Err(LexError::InvalidToken { line: self.line }),
+            _ => Err(LexError::InvalidToken {
+                line: self.current_line,
+            }),
         }
     }
 
@@ -219,7 +242,7 @@ impl<'a> HttpRequestLexer<'a> {
 
     fn advance(&mut self) {
         self.current += 1;
-        self.column += 1;
+        self.current_column += 1;
     }
 
     fn peek(&self) -> Option<u8> {
@@ -238,10 +261,8 @@ impl<'a> HttpRequestLexer<'a> {
         Token {
             kind,
             span: Span {
-                start: self.start as u32,
-                end: self.current as u32,
-                line: self.line,
-                column: self.column,
+                start: span_position(self.start, self.start_line, self.start_column),
+                end: span_position(self.current, self.current_line, self.current_column),
             },
         }
     }

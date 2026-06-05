@@ -1,11 +1,9 @@
-use std::fmt::Display;
-
+use super::*;
 use crate::{
     lexing::{lex_errors::LexError, lexer::Lexer, tokens::Token},
-    span::Span,
+    span::{span_position, Span},
 };
-
-use super::*;
+use std::fmt::Display;
 
 /// The different kinds of tokens for HTTP responses
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -36,7 +34,6 @@ impl Display for ResponseTokenKind {
             ResponseTokenKind::Body => "Body",
             ResponseTokenKind::Eof => "Eof",
         };
-
         write!(f, "{string}")
     }
 }
@@ -45,8 +42,10 @@ pub struct HttpResponseLexer<'a> {
     bytes: &'a [u8],
     start: usize,
     current: usize,
-    line: u32,
-    column: u32,
+    start_line: usize,
+    start_column: usize,
+    current_line: usize,
+    current_column: usize,
 }
 
 impl<'a> HttpResponseLexer<'a> {
@@ -55,8 +54,10 @@ impl<'a> HttpResponseLexer<'a> {
             bytes: src.as_bytes(),
             start: 0,
             current: 0,
-            line: 1,
-            column: 1,
+            start_line: 1,
+            start_column: 1,
+            current_line: 1,
+            current_column: 1,
         }
     }
 
@@ -66,13 +67,10 @@ impl<'a> HttpResponseLexer<'a> {
     ) -> Result<(), LexError> {
         self.lex_until_space(tokens, ResponseTokenKind::Version)?;
         self.consume_space(tokens)?;
-
         self.lex_until_space(tokens, ResponseTokenKind::StatusCode)?;
         self.consume_space(tokens)?;
-
         self.lex_until_crlf(tokens, ResponseTokenKind::ReasonPhrase)?;
         self.consume_crlf(tokens)?;
-
         Ok(())
     }
 
@@ -85,21 +83,16 @@ impl<'a> HttpResponseLexer<'a> {
                 self.consume_crlf(tokens)?;
                 break;
             }
-
             self.lex_until_byte(tokens, b':', ResponseTokenKind::HeaderName)?;
-
             self.start = self.current;
-
+            self.start_line = self.current_line;
+            self.start_column = self.current_column;
             self.consume_byte(b':')?;
             tokens.push(self.token(ResponseTokenKind::Colon));
-
             self.optional_spaces();
-
             self.lex_until_crlf(tokens, ResponseTokenKind::HeaderValue)?;
-
             self.consume_crlf(tokens)?;
         }
-
         Ok(())
     }
 
@@ -110,12 +103,11 @@ impl<'a> HttpResponseLexer<'a> {
         if self.is_at_end() {
             return Ok(());
         }
-
         self.start = self.current;
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
         self.current = self.bytes.len();
-
         tokens.push(self.token(ResponseTokenKind::Body));
-
         Ok(())
     }
 
@@ -125,17 +117,15 @@ impl<'a> HttpResponseLexer<'a> {
         kind: ResponseTokenKind,
     ) -> Result<(), LexError> {
         self.start = self.current;
-
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
         while let Some(b) = self.peek() {
             if b == b' ' {
                 break;
             }
-
             self.advance();
         }
-
         tokens.push(self.token(kind));
-
         Ok(())
     }
 
@@ -145,17 +135,15 @@ impl<'a> HttpResponseLexer<'a> {
         kind: ResponseTokenKind,
     ) -> Result<(), LexError> {
         self.start = self.current;
-
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
         while !self.check_crlf() {
             if self.is_at_end() {
                 return Err(LexError::UnexpectedEof);
             }
-
             self.advance();
         }
-
         tokens.push(self.token(kind));
-
         Ok(())
     }
 
@@ -166,17 +154,15 @@ impl<'a> HttpResponseLexer<'a> {
         kind: ResponseTokenKind,
     ) -> Result<(), LexError> {
         self.start = self.current;
-
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
         while let Some(b) = self.peek() {
             if b == stop {
                 break;
             }
-
             self.advance();
         }
-
         tokens.push(self.token(kind));
-
         Ok(())
     }
 
@@ -185,11 +171,10 @@ impl<'a> HttpResponseLexer<'a> {
         tokens: &mut Vec<tokens::Token<ResponseTokenKind>>,
     ) -> Result<(), LexError> {
         self.start = self.current;
-
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
         self.consume_byte(b' ')?;
-
         tokens.push(self.token(ResponseTokenKind::Space));
-
         Ok(())
     }
 
@@ -198,15 +183,13 @@ impl<'a> HttpResponseLexer<'a> {
         tokens: &mut Vec<tokens::Token<ResponseTokenKind>>,
     ) -> Result<(), LexError> {
         self.start = self.current;
-
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
         self.consume_byte(b'\r')?;
         self.consume_byte(b'\n')?;
-
         tokens.push(self.token(ResponseTokenKind::CrLf));
-
-        self.line += 1;
-        self.column = 1;
-
+        self.current_line += 1;
+        self.current_column = 1;
         Ok(())
     }
 
@@ -214,8 +197,11 @@ impl<'a> HttpResponseLexer<'a> {
         while self.peek() == Some(b' ') {
             self.advance();
         }
-
+        // After skipping optional spaces we start a new token,
+        // so update start positions to the next character.
         self.start = self.current;
+        self.start_line = self.current_line;
+        self.start_column = self.current_column;
     }
 
     fn consume_byte(&mut self, expected: u8) -> Result<(), LexError> {
@@ -224,7 +210,9 @@ impl<'a> HttpResponseLexer<'a> {
                 self.advance();
                 Ok(())
             }
-            _ => Err(LexError::InvalidToken { line: self.line }),
+            _ => Err(LexError::InvalidToken {
+                line: self.current_line,
+            }),
         }
     }
 
@@ -234,7 +222,7 @@ impl<'a> HttpResponseLexer<'a> {
 
     fn advance(&mut self) {
         self.current += 1;
-        self.column += 1;
+        self.current_column += 1;
     }
 
     fn peek(&self) -> Option<u8> {
@@ -253,10 +241,8 @@ impl<'a> HttpResponseLexer<'a> {
         tokens::Token {
             kind,
             span: Span {
-                start: self.start as u32,
-                end: self.current as u32,
-                line: self.line,
-                column: self.column,
+                start: span_position(self.start, self.start_line, self.start_column),
+                end: span_position(self.current, self.current_line, self.current_column),
             },
         }
     }
@@ -265,13 +251,10 @@ impl<'a> HttpResponseLexer<'a> {
 impl<'input> Lexer<ResponseTokenKind> for HttpResponseLexer<'input> {
     fn lex(mut self) -> Result<Vec<Token<ResponseTokenKind>>, LexError> {
         let mut tokens = Vec::new();
-
         self.lex_status_line(&mut tokens)?;
         self.lex_headers(&mut tokens)?;
         self.lex_body(&mut tokens)?;
-
         tokens.push(self.token(ResponseTokenKind::Eof));
-
         Ok(tokens)
     }
 }

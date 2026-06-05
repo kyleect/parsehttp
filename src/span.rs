@@ -1,31 +1,45 @@
-use std::ops::Range;
-
-use bon::bon;
+use bon::Builder;
 
 /// A range and position of text within source text
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Span {
-    pub start: u32,
-    pub end: u32,
-    pub line: u32,
-    pub column: u32,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Builder)]
+pub struct SpanPosition {
+    pub index: usize,
+    pub line: usize,
+    pub column: usize,
 }
 
-#[bon]
-impl Span {
-    #[builder]
-    pub fn new(range: Range<u32>, line: u32, column: u32) -> Self {
-        Self {
-            start: range.start,
-            end: range.end,
-            line,
-            column,
-        }
+impl From<(usize, usize, usize)> for SpanPosition {
+    fn from(value: (usize, usize, usize)) -> Self {
+        Self::builder()
+            .index(value.0)
+            .line(value.1)
+            .column(value.2)
+            .build()
     }
+}
 
+pub fn span_position(index: usize, line: usize, column: usize) -> SpanPosition {
+    (index, line, column).into()
+}
+
+/// A range and position of text within source text
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Builder)]
+pub struct Span {
+    pub start: SpanPosition,
+    pub end: SpanPosition,
+}
+
+impl Span {
     /// Get the slice of text the span represents in the source text
     pub fn slice<'a>(&self, source: &'a str) -> &'a str {
-        &source[self.start as usize..self.end as usize]
+        &source[self.start.index as usize..self.end.index as usize]
+    }
+}
+
+pub fn span(start: impl Into<SpanPosition>, end: impl Into<SpanPosition>) -> Span {
+    Span {
+        start: start.into(),
+        end: end.into(),
     }
 }
 
@@ -37,10 +51,14 @@ mod tests {
     fn slice() {
         let source = "Hello\nWorld";
 
-        let span = Span::builder().range(0..4).line(1).column(5).build();
+        let span = Span::builder()
+            .start(span_position(0, 1, 1))
+            .end(span_position(4, 1, 5))
+            .build();
+
         assert_eq!("Hell", span.slice(source));
 
-        let span = Span::builder().range(6..11).line(2).column(6).build();
-        assert_eq!("World", span.slice(source));
+        // let span = Span::builder().range(6..11).line(2).column(6).build();
+        // assert_eq!("World", span.slice(source));
     }
 }

@@ -42,7 +42,7 @@ impl<'input> HttpResponseParser<'input> {
             let prev = self.prev().unwrap();
             let prev_lexme = prev.span.slice(self.source);
             Err(ParsingError::UnexpectedToken {
-                line: self.peek().unwrap().span.line,
+                line: self.peek().unwrap().span.start.line,
                 message: format!("Expected '{}' but got '{}'", kind, prev_lexme),
             })
         }
@@ -68,7 +68,7 @@ impl<'input> HttpResponseParser<'input> {
 
         if token.kind != ResponseTokenKind::StatusCode {
             return Err(ParsingError::UnexpectedToken {
-                line: token.span.line,
+                line: token.span.start.line,
                 message: format!(
                     "Expected a status code but got: '{}'",
                     token.span.slice(self.source)
@@ -91,7 +91,7 @@ impl<'input> HttpResponseParser<'input> {
 
         if token.kind != ResponseTokenKind::Version {
             return Err(ParsingError::UnexpectedToken {
-                line: token.span.line,
+                line: token.span.start.line,
                 message: format!(
                     "Expected a version but got: '{}'",
                     token.span.slice(self.source)
@@ -112,7 +112,7 @@ impl<'input> HttpResponseParser<'input> {
 
         if name_tok.kind != ResponseTokenKind::HeaderName {
             return Err(ParsingError::UnexpectedToken {
-                line: name_tok.span.line,
+                line: name_tok.span.start.line,
                 message: format!(
                     "Expected a header key but got: '{}'",
                     name_tok.span.slice(self.source)
@@ -132,7 +132,7 @@ impl<'input> HttpResponseParser<'input> {
         };
         if value_tok.kind != ResponseTokenKind::HeaderValue {
             return Err(ParsingError::UnexpectedToken {
-                line: value_tok.span.line,
+                line: value_tok.span.start.line,
                 message: format!(
                     "Expected a header value but got: '{}'",
                     value_tok.span.slice(self.source)
@@ -156,7 +156,7 @@ impl<'input> HttpResponseParser<'input> {
 
             if !self.check(ResponseTokenKind::CrLf) {
                 return Err(ParsingError::UnexpectedToken {
-                    line: name_tok.span.line,
+                    line: name_tok.span.start.line,
                     message: format!(
                         "Expected a crlf but got: '{}'",
                         name_tok.span.slice(self.source)
@@ -189,7 +189,7 @@ impl<'input> HttpResponseParser<'input> {
                 Ok(Some(token.span.slice(self.source).to_string()))
             }
             _ => Err(ParsingError::UnexpectedToken {
-                line: token.span.line,
+                line: token.span.start.line,
                 message: format!(
                     "Expected a body or crlf but got: '{}' - {}",
                     token.span.slice(self.source),
