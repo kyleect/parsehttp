@@ -3,12 +3,7 @@ use core::fmt;
 #[cfg(feature = "json")]
 use serde::{Deserialize, Serialize};
 
-/// An HTTP header key & value
-///
-/// ```skip
-/// GET example.com HTTP/1.1
-/// key: value
-/// ```
+/// An HTTP header and value
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpHeader(String, String);

@@ -5,6 +5,7 @@ use crate::{
     span::Span,
 };
 
+/// The different kinds of tokens for HTTP requests
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RequestTokenKind {
     Method,

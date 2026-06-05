@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::parsing::models::HttpHeader;
 
+/// A parsed HTTP Response
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpResponse {
@@ -86,6 +87,7 @@ impl Display for HttpResponse {
     }
 }
 
+/// Numeric status code of HTTP response
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpStatusCode(u16);

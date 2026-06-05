@@ -7,6 +7,7 @@ use crate::{
 
 use super::*;
 
+/// The different kinds of tokens for HTTP responses
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResponseTokenKind {
     Version,

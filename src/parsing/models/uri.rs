@@ -3,11 +3,12 @@ use core::fmt;
 #[cfg(feature = "json")]
 use serde::{Deserialize, Serialize};
 
+/// The URI in an HTTP request
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
-pub struct Uri(String);
+pub struct HttpUri(String);
 
-impl Uri {
+impl HttpUri {
     pub fn new(uri: &str) -> Self {
         let uri = if uri.starts_with("https://") || uri.starts_with("http://") {
             uri
@@ -21,13 +22,13 @@ impl Uri {
     }
 }
 
-impl fmt::Display for Uri {
+impl fmt::Display for HttpUri {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl From<&str> for Uri {
+impl From<&str> for HttpUri {
     fn from(value: &str) -> Self {
         Self::new(value)
     }

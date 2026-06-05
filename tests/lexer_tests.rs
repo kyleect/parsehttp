@@ -96,7 +96,7 @@ mod request_lexer_tests {
 
 #[cfg(test)]
 mod response_lexer_tests {
-    use parsehttp::{HttpResponseLexer, Lexer, ResponseTokenKind, Span, Token};
+    use parsehttp::{lex_response, ResponseTokenKind, Span, Token};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -107,7 +107,7 @@ mod response_lexer_tests {
         \r\n\
         hello";
 
-        let tokens = HttpResponseLexer::new(src).lex().unwrap();
+        let tokens = lex_response(src).unwrap();
 
         assert_eq!(
             vec![

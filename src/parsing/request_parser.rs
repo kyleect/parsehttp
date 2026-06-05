@@ -1,7 +1,7 @@
 use crate::{
     lexing::{request_lexer::RequestTokenKind, tokens::Token},
     parsing::{
-        models::{HttpHeader, HttpMethod, HttpRequest, HttpVersion, Uri},
+        models::{HttpHeader, HttpMethod, HttpRequest, HttpUri, HttpVersion},
         parsing::Parser,
     },
 };
@@ -82,7 +82,7 @@ impl<'input> HttpRequestParser<'input> {
         Ok(token.span.slice(self.source).into())
     }
 
-    fn parse_uri(&mut self) -> Result<Uri, ParsingError> {
+    fn parse_uri(&mut self) -> Result<HttpUri, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),

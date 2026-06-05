@@ -3,6 +3,7 @@ use core::fmt;
 #[cfg(feature = "json")]
 use serde::{Deserialize, Serialize};
 
+/// HTTP version string
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpVersion(String);
