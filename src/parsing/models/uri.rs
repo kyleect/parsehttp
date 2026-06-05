@@ -1,6 +1,10 @@
 use core::fmt;
 
+#[cfg(feature = "json")]
+use serde::{Deserialize, Serialize};
+
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct Uri(String);
 
 impl Uri {

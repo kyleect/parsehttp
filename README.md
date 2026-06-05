@@ -41,6 +41,25 @@ cargo run --example parse ./requests/post.http
 # body
 ```
 
+#### Parsing As Json
+
+```sh
+cargo run --example json --features json ./requests/post.http
+
+# {
+#   "uri": "/",
+#   "method": "POST",
+#   "http_version": "HTTP/1.1",
+#   "headers": [
+#     [
+#       "Host",
+#       "example.com"
+#     ]
+#   ],
+#   "body": "body"
+# }
+```
+
 ### Library
 
 #### Lexing

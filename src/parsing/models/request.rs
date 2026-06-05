@@ -1,8 +1,12 @@
 use std::fmt::Display;
 
+#[cfg(feature = "json")]
+use serde::{Deserialize, Serialize};
+
 use crate::parsing::models::{HttpHeader, HttpVersion, Uri};
 
 #[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub enum HttpMethod {
     GET,
     POST,
@@ -73,6 +77,7 @@ mod test_from_str_to_http_method {
 }
 
 #[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpRequest {
     pub uri: Uri,
     pub method: HttpMethod,

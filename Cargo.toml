@@ -11,7 +11,17 @@ path = "src/lib.rs"
 [dependencies]
 url = "2.5.7"
 bon = "3.9.1"
+serde = { version = "1", optional = true, features = ["derive"] }
+serde_json = { version = "1", optional = true }
 
 [dev-dependencies]
 "pretty_assertions" = "1"
 rstest = "0.26.1"
+
+[features]
+default = []
+json = ["dep:serde", "dep:serde_json"]
+
+[[example]]
+name = "json"
+required-features = ["json"]

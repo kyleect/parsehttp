@@ -1,5 +1,8 @@
 use core::fmt;
 
+#[cfg(feature = "json")]
+use serde::{Deserialize, Serialize};
+
 /// An HTTP header key & value
 ///
 /// ```skip
@@ -7,6 +10,7 @@ use core::fmt;
 /// key: value
 /// ```
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpHeader(String, String);
 
 impl HttpHeader {
