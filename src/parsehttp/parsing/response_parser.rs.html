@@ -42,7 +42,7 @@
 <a href=#42 id=42 data-nosnippet>42</a>            <span class="kw">let </span>prev = <span class="self">self</span>.prev().unwrap();
 <a href=#43 id=43 data-nosnippet>43</a>            <span class="kw">let </span>prev_lexme = prev.span.slice(<span class="self">self</span>.source);
 <a href=#44 id=44 data-nosnippet>44</a>            <span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#45 id=45 data-nosnippet>45</a>                line: <span class="self">self</span>.peek().unwrap().span.line,
+<a href=#45 id=45 data-nosnippet>45</a>                line: <span class="self">self</span>.peek().unwrap().span.start.line,
 <a href=#46 id=46 data-nosnippet>46</a>                message: <span class="macro">format!</span>(<span class="string">"Expected '{}' but got '{}'"</span>, kind, prev_lexme),
 <a href=#47 id=47 data-nosnippet>47</a>            })
 <a href=#48 id=48 data-nosnippet>48</a>        }
@@ -68,7 +68,7 @@
 <a href=#68 id=68 data-nosnippet>68</a>
 <a href=#69 id=69 data-nosnippet>69</a>        <span class="kw">if </span>token.kind != ResponseTokenKind::StatusCode {
 <a href=#70 id=70 data-nosnippet>70</a>            <span class="kw">return </span><span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#71 id=71 data-nosnippet>71</a>                line: token.span.line,
+<a href=#71 id=71 data-nosnippet>71</a>                line: token.span.start.line,
 <a href=#72 id=72 data-nosnippet>72</a>                message: <span class="macro">format!</span>(
 <a href=#73 id=73 data-nosnippet>73</a>                    <span class="string">"Expected a status code but got: '{}'"</span>,
 <a href=#74 id=74 data-nosnippet>74</a>                    token.span.slice(<span class="self">self</span>.source)
@@ -91,7 +91,7 @@
 <a href=#91 id=91 data-nosnippet>91</a>
 <a href=#92 id=92 data-nosnippet>92</a>        <span class="kw">if </span>token.kind != ResponseTokenKind::Version {
 <a href=#93 id=93 data-nosnippet>93</a>            <span class="kw">return </span><span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#94 id=94 data-nosnippet>94</a>                line: token.span.line,
+<a href=#94 id=94 data-nosnippet>94</a>                line: token.span.start.line,
 <a href=#95 id=95 data-nosnippet>95</a>                message: <span class="macro">format!</span>(
 <a href=#96 id=96 data-nosnippet>96</a>                    <span class="string">"Expected a version but got: '{}'"</span>,
 <a href=#97 id=97 data-nosnippet>97</a>                    token.span.slice(<span class="self">self</span>.source)
@@ -112,7 +112,7 @@
 <a href=#112 id=112 data-nosnippet>112</a>
 <a href=#113 id=113 data-nosnippet>113</a>        <span class="kw">if </span>name_tok.kind != ResponseTokenKind::HeaderName {
 <a href=#114 id=114 data-nosnippet>114</a>            <span class="kw">return </span><span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#115 id=115 data-nosnippet>115</a>                line: name_tok.span.line,
+<a href=#115 id=115 data-nosnippet>115</a>                line: name_tok.span.start.line,
 <a href=#116 id=116 data-nosnippet>116</a>                message: <span class="macro">format!</span>(
 <a href=#117 id=117 data-nosnippet>117</a>                    <span class="string">"Expected a header key but got: '{}'"</span>,
 <a href=#118 id=118 data-nosnippet>118</a>                    name_tok.span.slice(<span class="self">self</span>.source)
@@ -132,7 +132,7 @@
 <a href=#132 id=132 data-nosnippet>132</a>        };
 <a href=#133 id=133 data-nosnippet>133</a>        <span class="kw">if </span>value_tok.kind != ResponseTokenKind::HeaderValue {
 <a href=#134 id=134 data-nosnippet>134</a>            <span class="kw">return </span><span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#135 id=135 data-nosnippet>135</a>                line: value_tok.span.line,
+<a href=#135 id=135 data-nosnippet>135</a>                line: value_tok.span.start.line,
 <a href=#136 id=136 data-nosnippet>136</a>                message: <span class="macro">format!</span>(
 <a href=#137 id=137 data-nosnippet>137</a>                    <span class="string">"Expected a header value but got: '{}'"</span>,
 <a href=#138 id=138 data-nosnippet>138</a>                    value_tok.span.slice(<span class="self">self</span>.source)
@@ -156,7 +156,7 @@
 <a href=#156 id=156 data-nosnippet>156</a>
 <a href=#157 id=157 data-nosnippet>157</a>            <span class="kw">if </span>!<span class="self">self</span>.check(ResponseTokenKind::CrLf) {
 <a href=#158 id=158 data-nosnippet>158</a>                <span class="kw">return </span><span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#159 id=159 data-nosnippet>159</a>                    line: name_tok.span.line,
+<a href=#159 id=159 data-nosnippet>159</a>                    line: name_tok.span.start.line,
 <a href=#160 id=160 data-nosnippet>160</a>                    message: <span class="macro">format!</span>(
 <a href=#161 id=161 data-nosnippet>161</a>                        <span class="string">"Expected a crlf but got: '{}'"</span>,
 <a href=#162 id=162 data-nosnippet>162</a>                        name_tok.span.slice(<span class="self">self</span>.source)
@@ -189,7 +189,7 @@
 <a href=#189 id=189 data-nosnippet>189</a>                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(token.span.slice(<span class="self">self</span>.source).to_string()))
 <a href=#190 id=190 data-nosnippet>190</a>            }
 <a href=#191 id=191 data-nosnippet>191</a>            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(ParsingError::UnexpectedToken {
-<a href=#192 id=192 data-nosnippet>192</a>                line: token.span.line,
+<a href=#192 id=192 data-nosnippet>192</a>                line: token.span.start.line,
 <a href=#193 id=193 data-nosnippet>193</a>                message: <span class="macro">format!</span>(
 <a href=#194 id=194 data-nosnippet>194</a>                    <span class="string">"Expected a body or crlf but got: '{}' - {}"</span>,
 <a href=#195 id=195 data-nosnippet>195</a>                    token.span.slice(<span class="self">self</span>.source),
