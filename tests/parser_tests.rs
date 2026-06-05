@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod request_parser_tests {
-    use http_lexer_project::{lex_request, parse_request, HttpRequest};
+    use parsehttp::{lex_request, parse_request, HttpRequest};
     use pretty_assertions::assert_eq;
 
     #[test]

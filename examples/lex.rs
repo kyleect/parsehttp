@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use http_lexer_project::lex_request;
+use parsehttp::lex_request;
 
 fn main() {
     let path = std::env::args().nth(1).expect("no pattern given");

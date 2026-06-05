@@ -1,8 +1,53 @@
 # HTTP Message Parser
 
-## Lexing
+## What It Does
+
+- Lex HTTP Request/Response messages into tokens.
+- Parse tokens into `HttpRequest` and `HttpResponse`.
+
+## Usage
+
+### CLI
+
+#### Lexing
+
+```sh
+cargo run --example lex ./requests/post.http
+
+# Method
+# Space
+# Uri
+# Space
+# HttpVersion
+# CrLf
+# HeaderName
+# :
+# HeaderValue
+# CrLf
+# CrLf
+# Body
+# Eof
+
+```
+
+#### Parsing
+
+```sh
+cargo run --example parse ./requests/post.http
+
+# POST / HTTP/1.1
+# Host: example.com
+
+# body
+```
+
+### Library
+
+#### Lexing
 
 ```rust
+use parsehttp::{lex_request, RequestTokenKind, Span, Token};
+
 let src = "\
     GET /hello HTTP/1.1\r\n\
     Host: example.com\r\n\
@@ -91,9 +136,11 @@ let body = tokens
 assert_eq!(body.span.slice(src), "body");
 ```
 
-## Parsing
+#### Parsing
 
 ```rust
+use parsehttp::{lex_request, parse_request, HttpRequest};
+
 let src = "\
     POST /hello HTTP/1.1\r\n\
     Host: example.com\r\n\

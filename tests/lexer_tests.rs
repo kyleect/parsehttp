@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod request_lexer_tests {
-    use http_lexer_project::{lex_request, RequestTokenKind, Span, Token};
+    use parsehttp::{lex_request, RequestTokenKind, Span, Token};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -96,7 +96,7 @@ mod request_lexer_tests {
 
 #[cfg(test)]
 mod response_lexer_tests {
-    use http_lexer_project::{HttpResponseLexer, Lexer, ResponseTokenKind, Span, Token};
+    use parsehttp::{HttpResponseLexer, Lexer, ResponseTokenKind, Span, Token};
     use pretty_assertions::assert_eq;
 
     #[test]

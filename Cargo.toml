@@ -1,11 +1,11 @@
 
 [package]
-name = "http_lexer_project"
+name = "parsehttp"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "http_lexer_project"
+name = "parsehttp"
 path = "src/lib.rs"
 
 [dependencies]
