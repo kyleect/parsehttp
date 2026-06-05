@@ -23,5 +23,5 @@ default = []
 json = ["dep:serde", "dep:serde_json"]
 
 [[example]]
-name = "json"
+name = "request_to_json"
 required-features = ["json"]

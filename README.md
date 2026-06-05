@@ -13,7 +13,7 @@
 #### Lexing
 
 ```sh
-cargo run --example lex ./requests/post.http
+cargo run --example lex_request ./requests/post.http
 
 # Method
 # Space
@@ -34,7 +34,7 @@ cargo run --example lex ./requests/post.http
 #### Parsing
 
 ```sh
-cargo run --example parse ./requests/post.http
+cargo run --example parse_request ./requests/post.http
 
 # POST / HTTP/1.1
 # Host: example.com
@@ -45,7 +45,7 @@ cargo run --example parse ./requests/post.http
 #### Parsing As Json
 
 ```sh
-cargo run --example json --features json ./requests/post.http > jq .headers
+cargo run --example request_to_json --features json ./requests/post.http > jq .headers
 
 # [
 #   [
