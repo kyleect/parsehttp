@@ -30,11 +30,6 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v4
-        with:
-          cache: npm
-          cache-dependency-path: vsc/package-lock.json
-          node-version: 20
       - name: Build Docs
         run: cargo doc
       - name: Generate No Jekyll File
