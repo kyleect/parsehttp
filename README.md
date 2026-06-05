@@ -44,20 +44,14 @@ cargo run --example parse ./requests/post.http
 #### Parsing As Json
 
 ```sh
-cargo run --example json --features json ./requests/post.http
+cargo run --example json --features json ./requests/post.http > jq .headers
 
-# {
-#   "uri": "/",
-#   "method": "POST",
-#   "http_version": "HTTP/1.1",
-#   "headers": [
-#     [
-#       "Host",
-#       "example.com"
-#     ]
-#   ],
-#   "body": "body"
-# }
+# [
+#   [
+#     "Host",
+#     "example.com"
+#   ]
+# ]
 ```
 
 ### Library
