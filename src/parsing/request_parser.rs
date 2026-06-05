@@ -122,53 +122,55 @@ impl<'input> HttpRequestParser<'input> {
         Ok(token.span.slice(self.source).into())
     }
 
+    fn parse_header_name(&mut self) -> Result<Token<RequestTokenKind>, ParsingError> {
+        let name_tok = match self.peek() {
+            Some(t) => t.clone(),
+            None => return Err(ParsingError::UnexpectedEof),
+        };
+
+        if name_tok.kind != RequestTokenKind::HeaderName {
+            return Err(ParsingError::UnexpectedToken {
+                line: name_tok.span.line,
+                message: format!(
+                    "Expected a header key but got: '{}'",
+                    name_tok.span.slice(self.source)
+                ),
+            });
+        }
+
+        self.advance();
+
+        Ok(name_tok)
+    }
+
+    fn parse_header_value(&mut self) -> Result<Token<RequestTokenKind>, ParsingError> {
+        let value_tok = match self.peek() {
+            Some(t) => t.clone(),
+            None => return Err(ParsingError::UnexpectedEof),
+        };
+        if value_tok.kind != RequestTokenKind::HeaderValue {
+            return Err(ParsingError::UnexpectedToken {
+                line: value_tok.span.line,
+                message: format!(
+                    "Expected a header value but got: '{}'",
+                    value_tok.span.slice(self.source)
+                ),
+            });
+        }
+        self.advance();
+
+        Ok(value_tok)
+    }
+
     fn parse_headers(&mut self) -> Result<Vec<HttpHeader>, ParsingError> {
         let mut headers = Vec::new();
 
         while !self.check(RequestTokenKind::CrLf) && !self.is_at_end() {
-            let name_tok = match self.peek() {
-                Some(t) => t.clone(),
-                None => return Err(ParsingError::UnexpectedEof),
-            };
+            let name_tok = self.parse_header_name()?;
 
-            if name_tok.kind != RequestTokenKind::HeaderName {
-                return Err(ParsingError::UnexpectedToken {
-                    line: name_tok.span.line,
-                    message: format!(
-                        "Expected a header key but got: '{}'",
-                        name_tok.span.slice(self.source)
-                    ),
-                });
-            }
+            self.consume(RequestTokenKind::Colon)?;
 
-            self.advance();
-
-            if !self.check(RequestTokenKind::Colon) {
-                return Err(ParsingError::UnexpectedToken {
-                    line: self.peek().unwrap().span.line,
-                    message: format!(
-                        "Expected a header separator but got: '{}'",
-                        self.peek().unwrap().span.slice(self.source)
-                    ),
-                });
-            }
-
-            self.advance();
-
-            let value_tok = match self.peek() {
-                Some(t) => t.clone(),
-                None => return Err(ParsingError::UnexpectedEof),
-            };
-            if value_tok.kind != RequestTokenKind::HeaderValue {
-                return Err(ParsingError::UnexpectedToken {
-                    line: value_tok.span.line,
-                    message: format!(
-                        "Expected a header value but got: '{}'",
-                        value_tok.span.slice(self.source)
-                    ),
-                });
-            }
-            self.advance();
+            let value_tok = self.parse_header_value()?;
 
             if !self.check(RequestTokenKind::CrLf) {
                 return Err(ParsingError::UnexpectedToken {
@@ -186,8 +188,6 @@ impl<'input> HttpRequestParser<'input> {
             ));
         }
 
-        self.consume(RequestTokenKind::CrLf)?;
-
         Ok(headers)
     }
 
@@ -197,19 +197,24 @@ impl<'input> HttpRequestParser<'input> {
             None => return Ok(None),
         };
 
-        if token.kind != RequestTokenKind::Body {
-            return Err(ParsingError::UnexpectedToken {
+        match token.kind {
+            RequestTokenKind::CrLf => {
+                self.advance();
+                Ok(Some(token.span.slice(self.source).to_string()))
+            }
+            RequestTokenKind::Body => {
+                self.advance();
+                Ok(Some(token.span.slice(self.source).to_string()))
+            }
+            _ => Err(ParsingError::UnexpectedToken {
                 line: token.span.line,
                 message: format!(
-                    "Expected a version but got: '{}'",
-                    token.span.slice(self.source)
+                    "Expected a body or crlf but got: '{}' - {}",
+                    token.span.slice(self.source),
+                    token.kind
                 ),
-            });
+            }),
         }
-
-        self.advance();
-
-        Ok(Some(token.span.slice(self.source).to_string()))
     }
 }
 
@@ -233,7 +238,13 @@ impl<'input> Parser<RequestTokenKind, HttpRequest> for HttpRequestParser<'input>
 
         self.consume(RequestTokenKind::CrLf)?;
 
-        let body = self.parse_body()?;
+        self.consume(RequestTokenKind::CrLf)?;
+
+        let body = if self.check(RequestTokenKind::Eof) {
+            None
+        } else {
+            self.parse_body()?
+        };
 
         let request = HttpRequest {
             uri,
