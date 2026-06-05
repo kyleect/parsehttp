@@ -1,8 +1,13 @@
 use core::fmt;
+use std::fmt::Display;
+
+#[cfg(feature = "json")]
+use serde::{Deserialize, Serialize};
 
 use crate::parsing::models::HttpHeader;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpResponse {
     pub status_code: HttpStatusCode,
     pub headers: Vec<HttpHeader>,
@@ -48,7 +53,41 @@ impl HttpResponse {
     }
 }
 
+impl Display for HttpResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let headers = if self.headers.is_empty() {
+            None
+        } else {
+            Some(format!(
+                "{}\n",
+                self.headers
+                    .clone()
+                    .into_iter()
+                    .map(|x| format!("{}: {}", x.key(), x.value()))
+                    .collect::<Vec<String>>()
+                    .join("\n")
+                    .trim_end()
+            ))
+        };
+
+        let body = self
+            .body
+            .clone()
+            .and_then(|x| if x.is_empty() { None } else { Some(x) });
+
+        let the_rest = match (&headers, &body) {
+            (Some(headers), Some(body)) => format!("{headers}\n{body}"),
+            (Some(headers), None) => headers.to_string(),
+            (None, Some(body)) => format!("\n{body}"),
+            (None, None) => String::new(),
+        };
+
+        write!(f, "HTTP/1.1 {} OK\r\n{}", self.status_code, the_rest)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpStatusCode(u16);
 
 impl HttpStatusCode {

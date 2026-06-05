@@ -25,3 +25,7 @@ json = ["dep:serde", "dep:serde_json"]
 [[example]]
 name = "request_to_json"
 required-features = ["json"]
+
+[[example]]
+name = "response_to_json"
+required-features = ["json"]

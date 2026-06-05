@@ -1,6 +1,9 @@
 use crate::{
     lexing::lex_errors::LexError,
-    parsing::{parse_errors::ParsingError, parsing::Parser, request_parser::HttpRequestParser},
+    parsing::{
+        models::HttpResponse, parse_errors::ParsingError, parsing::Parser,
+        request_parser::HttpRequestParser, response_parser::HttpResponseParser,
+    },
 };
 
 mod lexing;
@@ -29,4 +32,11 @@ pub fn parse_request(
     tokens: Vec<Token<RequestTokenKind>>,
 ) -> Result<HttpRequest, ParsingError> {
     HttpRequestParser::new(src).parse(tokens)
+}
+
+pub fn parse_response(
+    src: &str,
+    tokens: Vec<Token<ResponseTokenKind>>,
+) -> Result<HttpResponse, ParsingError> {
+    HttpResponseParser::new(src).parse(tokens)
 }
