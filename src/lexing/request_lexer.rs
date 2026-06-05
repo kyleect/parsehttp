@@ -21,18 +21,20 @@ pub enum RequestTokenKind {
 
 impl Display for RequestTokenKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            RequestTokenKind::Method => write!(f, "Method"),
-            RequestTokenKind::Uri => write!(f, "Uri"),
-            RequestTokenKind::Version => write!(f, "HttpVersion"),
-            RequestTokenKind::HeaderName => write!(f, "HeaderName"),
-            RequestTokenKind::HeaderValue => write!(f, "HeaderValue"),
-            RequestTokenKind::Colon => write!(f, ":"),
-            RequestTokenKind::Space => write!(f, " "),
-            RequestTokenKind::CrLf => write!(f, "\r\n"),
-            RequestTokenKind::Body => write!(f, "Body"),
-            RequestTokenKind::Eof => write!(f, "Eof"),
-        }
+        let string = match self {
+            RequestTokenKind::Method => "Method",
+            RequestTokenKind::Uri => "Uri",
+            RequestTokenKind::Version => "HttpVersion",
+            RequestTokenKind::HeaderName => "HeaderName",
+            RequestTokenKind::HeaderValue => "HeaderValue",
+            RequestTokenKind::Colon => ":",
+            RequestTokenKind::Space => "Space",
+            RequestTokenKind::CrLf => "CrLf",
+            RequestTokenKind::Body => "Body",
+            RequestTokenKind::Eof => "Eof",
+        };
+
+        write!(f, "{string}")
     }
 }
 
