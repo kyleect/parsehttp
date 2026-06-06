@@ -1,28 +1,22 @@
-use crate::{
-    lexing::lex_errors::LexError,
-    parsing::{
-        parse_errors::ParsingError, parsing::Parser, request_parser::HttpRequestParser,
-        response_parser::HttpResponseParser,
-    },
+use crate::parsing::{
+    parsing::Parser, request_parser::HttpRequestParser, response_parser::HttpResponseParser,
 };
 
 mod lexing;
 mod parsing;
 mod span;
 
+pub use crate::lexing::lex_errors::LexError;
 use crate::lexing::lexer::Lexer;
 use crate::lexing::request_lexer::HttpRequestLexer;
 pub use crate::lexing::request_lexer::RequestTokenKind;
 use crate::lexing::response_lexer::HttpResponseLexer;
 pub use crate::lexing::response_lexer::ResponseTokenKind;
 pub use crate::lexing::tokens::Token;
-pub use crate::parsing::models::HttpHeader;
-pub use crate::parsing::models::HttpMethod;
-pub use crate::parsing::models::HttpRequest;
-pub use crate::parsing::models::HttpResponse;
-pub use crate::parsing::models::HttpStatusCode;
-pub use crate::parsing::models::HttpUri;
-pub use crate::parsing::models::HttpVersion;
+pub use crate::parsing::models::{
+    HttpHeader, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode, HttpUri, HttpVersion,
+};
+pub use crate::parsing::parse_errors::ParsingError;
 pub use crate::span::{span, span_position, Span};
 
 /// Lex a HTTP request from a string in to tokens

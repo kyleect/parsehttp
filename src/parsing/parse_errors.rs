@@ -1,3 +1,4 @@
+/// An error that occurs during parsing
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ParsingError {
     UnexpectedEof,

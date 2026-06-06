@@ -18,6 +18,7 @@ impl From<(usize, usize, usize)> for SpanPosition {
     }
 }
 
+/// Construct a span position
 pub fn span_position(index: usize, line: usize, column: usize) -> SpanPosition {
     (index, line, column).into()
 }
@@ -36,6 +37,7 @@ impl Span {
     }
 }
 
+/// Construct a span from two span positions
 pub fn span(start: impl Into<SpanPosition>, end: impl Into<SpanPosition>) -> Span {
     Span {
         start: start.into(),
