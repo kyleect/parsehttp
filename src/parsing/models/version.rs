@@ -12,10 +12,6 @@ impl HttpVersion {
     pub fn new(version: &str) -> Self {
         Self(version.to_string())
     }
-
-    fn is_prefixed(&self) -> bool {
-        self.0.starts_with("HTTP/")
-    }
 }
 
 impl Default for HttpVersion {
@@ -32,29 +28,13 @@ impl From<&str> for HttpVersion {
 
 impl fmt::Display for HttpVersion {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.is_prefixed() {
-            write!(f, "{}", self.0)
-        } else {
-            write!(f, "HTTP/{}", self.0)
-        }
+        write!(f, "{}", self.0)
     }
 }
 
 #[cfg(test)]
 mod http_version_tests {
     use super::*;
-
-    #[test]
-    fn test_is_prefixed_with_http_prefix() {
-        let version = HttpVersion("HTTP/1.1".to_string());
-        assert!(version.is_prefixed());
-    }
-
-    #[test]
-    fn test_is_prefixed_without_http_prefix() {
-        let version = HttpVersion("1.1".to_string());
-        assert!(!version.is_prefixed());
-    }
 
     #[test]
     fn test_default_value() {
@@ -71,6 +51,6 @@ mod http_version_tests {
     #[test]
     fn test_from_str_without_http_prefix() {
         let version = HttpVersion::from("1.1");
-        assert_eq!(version.to_string(), "HTTP/1.1");
+        assert_eq!(version.to_string(), "1.1");
     }
 }
