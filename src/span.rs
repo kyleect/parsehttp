@@ -19,7 +19,7 @@ impl From<(usize, usize, usize)> for SpanPosition {
 }
 
 /// Construct a span position
-pub fn span_position(index: usize, line: usize, column: usize) -> SpanPosition {
+pub fn position(index: usize, line: usize, column: usize) -> SpanPosition {
     (index, line, column).into()
 }
 
@@ -53,14 +53,14 @@ mod tests {
     fn slice() {
         let source = "Hello\nWorld";
 
-        let span = Span::builder()
-            .start(span_position(0, 1, 1))
-            .end(span_position(4, 1, 5))
-            .build();
+        assert_eq!(
+            "Hell",
+            span(position(0, 1, 1), position(4, 1, 5)).slice(source)
+        );
 
-        assert_eq!("Hell", span.slice(source));
-
-        // let span = Span::builder().range(6..11).line(2).column(6).build();
-        // assert_eq!("World", span.slice(source));
+        assert_eq!(
+            "World",
+            span(position(6, 2, 1), position(11, 2, 6)).slice(source)
+        );
     }
 }

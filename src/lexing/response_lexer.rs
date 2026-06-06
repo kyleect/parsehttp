@@ -1,7 +1,7 @@
 use super::*;
 use crate::{
     lexing::{lex_errors::LexError, lexer::Lexer, tokens::Token},
-    span::{span_position, Span},
+    span::{position, Span},
 };
 use std::fmt::Display;
 
@@ -241,8 +241,8 @@ impl<'a> HttpResponseLexer<'a> {
         tokens::Token {
             kind,
             span: Span {
-                start: span_position(self.start, self.start_line, self.start_column),
-                end: span_position(self.current, self.current_line, self.current_column),
+                start: position(self.start, self.start_line, self.start_column),
+                end: position(self.current, self.current_line, self.current_column),
             },
         }
     }

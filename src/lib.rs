@@ -17,7 +17,7 @@ pub use crate::parsing::models::{
     HttpHeader, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode, HttpUri, HttpVersion,
 };
 pub use crate::parsing::parse_errors::ParsingError;
-pub use crate::span::{span, span_position, Span};
+pub use crate::span::{position, span, Span};
 
 /// Lex a HTTP request from a string in to tokens
 pub fn lex_request(src: &str) -> Result<Vec<Token<RequestTokenKind>>, LexError> {

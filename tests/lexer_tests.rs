@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod request_lexer_tests {
-    use parsehttp::{lex_request, span, span_position, RequestTokenKind, Token};
+    use parsehttp::{lex_request, position, span, RequestTokenKind, Token};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -17,55 +17,55 @@ mod request_lexer_tests {
             vec![
                 Token {
                     kind: RequestTokenKind::Method,
-                    span: span(span_position(0, 1, 1), span_position(4, 1, 5)),
+                    span: span(position(0, 1, 1), position(4, 1, 5)),
                 },
                 Token {
                     kind: RequestTokenKind::Space,
-                    span: span(span_position(4, 1, 5), span_position(5, 1, 6)),
+                    span: span(position(4, 1, 5), position(5, 1, 6)),
                 },
                 Token {
                     kind: RequestTokenKind::Uri,
-                    span: span(span_position(5, 1, 6), span_position(6, 1, 7)),
+                    span: span(position(5, 1, 6), position(6, 1, 7)),
                 },
                 Token {
                     kind: RequestTokenKind::Space,
-                    span: span(span_position(6, 1, 7), span_position(7, 1, 8)),
+                    span: span(position(6, 1, 7), position(7, 1, 8)),
                 },
                 Token {
                     kind: RequestTokenKind::Version,
-                    span: span(span_position(7, 1, 8), span_position(15, 1, 16)),
+                    span: span(position(7, 1, 8), position(15, 1, 16)),
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: span(span_position(15, 1, 16), span_position(17, 1, 18)),
+                    span: span(position(15, 1, 16), position(17, 1, 18)),
                 },
                 Token {
                     kind: RequestTokenKind::HeaderName,
-                    span: span(span_position(17, 2, 1), span_position(21, 2, 5)),
+                    span: span(position(17, 2, 1), position(21, 2, 5)),
                 },
                 Token {
                     kind: RequestTokenKind::Colon,
-                    span: span(span_position(21, 2, 5), span_position(22, 2, 6)),
+                    span: span(position(21, 2, 5), position(22, 2, 6)),
                 },
                 Token {
                     kind: RequestTokenKind::HeaderValue,
-                    span: span(span_position(23, 2, 7), span_position(34, 2, 18)),
+                    span: span(position(23, 2, 7), position(34, 2, 18)),
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: span(span_position(34, 2, 18), span_position(36, 2, 20)),
+                    span: span(position(34, 2, 18), position(36, 2, 20)),
                 },
                 Token {
                     kind: RequestTokenKind::CrLf,
-                    span: span(span_position(36, 3, 1), span_position(38, 3, 3)),
+                    span: span(position(36, 3, 1), position(38, 3, 3)),
                 },
                 Token {
                     kind: RequestTokenKind::Body,
-                    span: span(span_position(38, 4, 1), span_position(42, 4, 1)),
+                    span: span(position(38, 4, 1), position(42, 4, 1)),
                 },
                 Token {
                     kind: RequestTokenKind::Eof,
-                    span: span(span_position(38, 4, 1), span_position(42, 4, 1)),
+                    span: span(position(38, 4, 1), position(42, 4, 1)),
                 },
             ],
             tokens,
@@ -96,7 +96,7 @@ mod request_lexer_tests {
 
 #[cfg(test)]
 mod response_lexer_tests {
-    use parsehttp::{lex_response, span, span_position, ResponseTokenKind, Token};
+    use parsehttp::{lex_response, position, span, ResponseTokenKind, Token};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -113,55 +113,55 @@ mod response_lexer_tests {
             vec![
                 Token {
                     kind: ResponseTokenKind::Version,
-                    span: span(span_position(0, 1, 1), span_position(8, 1, 9)),
+                    span: span(position(0, 1, 1), position(8, 1, 9)),
                 },
                 Token {
                     kind: ResponseTokenKind::Space,
-                    span: span(span_position(8, 1, 9), span_position(9, 1, 10)),
+                    span: span(position(8, 1, 9), position(9, 1, 10)),
                 },
                 Token {
                     kind: ResponseTokenKind::StatusCode,
-                    span: span(span_position(9, 1, 10), span_position(12, 1, 13)),
+                    span: span(position(9, 1, 10), position(12, 1, 13)),
                 },
                 Token {
                     kind: ResponseTokenKind::Space,
-                    span: span(span_position(12, 1, 13), span_position(13, 1, 14)),
+                    span: span(position(12, 1, 13), position(13, 1, 14)),
                 },
                 Token {
                     kind: ResponseTokenKind::ReasonPhrase,
-                    span: span(span_position(13, 1, 14), span_position(15, 1, 16)),
+                    span: span(position(13, 1, 14), position(15, 1, 16)),
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: span(span_position(15, 1, 16), span_position(17, 1, 18)),
+                    span: span(position(15, 1, 16), position(17, 1, 18)),
                 },
                 Token {
                     kind: ResponseTokenKind::HeaderName,
-                    span: span(span_position(17, 2, 1), span_position(29, 2, 13)),
+                    span: span(position(17, 2, 1), position(29, 2, 13)),
                 },
                 Token {
                     kind: ResponseTokenKind::Colon,
-                    span: span(span_position(29, 2, 13), span_position(30, 2, 14)),
+                    span: span(position(29, 2, 13), position(30, 2, 14)),
                 },
                 Token {
                     kind: ResponseTokenKind::HeaderValue,
-                    span: span(span_position(31, 2, 15), span_position(41, 2, 25)),
+                    span: span(position(31, 2, 15), position(41, 2, 25)),
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: span(span_position(41, 2, 25), span_position(43, 2, 27)),
+                    span: span(position(41, 2, 25), position(43, 2, 27)),
                 },
                 Token {
                     kind: ResponseTokenKind::CrLf,
-                    span: span(span_position(43, 3, 1), span_position(45, 3, 3)),
+                    span: span(position(43, 3, 1), position(45, 3, 3)),
                 },
                 Token {
                     kind: ResponseTokenKind::Body,
-                    span: span(span_position(45, 4, 1), span_position(50, 4, 1)),
+                    span: span(position(45, 4, 1), position(50, 4, 1)),
                 },
                 Token {
                     kind: ResponseTokenKind::Eof,
-                    span: span(span_position(45, 4, 1), span_position(50, 4, 1)),
+                    span: span(position(45, 4, 1), position(50, 4, 1)),
                 },
             ],
             tokens
