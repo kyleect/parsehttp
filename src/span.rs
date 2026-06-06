@@ -33,7 +33,7 @@ pub struct Span {
 impl Span {
     /// Get the slice of text the span represents in the source text
     pub fn slice<'a>(&self, source: &'a str) -> &'a str {
-        &source[self.start.index as usize..self.end.index as usize]
+        &source[self.start.index..self.end.index]
     }
 }
 

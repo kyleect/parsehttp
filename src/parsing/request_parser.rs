@@ -2,7 +2,7 @@ use crate::{
     lexing::{request_lexer::RequestTokenKind, tokens::Token},
     parsing::{
         models::{HttpHeader, HttpMethod, HttpRequest, HttpUri, HttpVersion},
-        parsing::Parser,
+        parser::Parser,
     },
 };
 

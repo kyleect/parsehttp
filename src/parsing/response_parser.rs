@@ -2,7 +2,7 @@ use crate::{
     parsing::{
         models::{HttpHeader, HttpResponse, HttpStatusCode, HttpVersion},
         parse_errors::ParsingError,
-        parsing::Parser,
+        parser::Parser,
     },
     ResponseTokenKind, Token,
 };
