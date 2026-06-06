@@ -19,7 +19,7 @@
 <a href=#19 id=19 data-nosnippet>19</a>}
 <a href=#20 id=20 data-nosnippet>20</a>
 <a href=#21 id=21 data-nosnippet>21</a><span class="doccomment">/// Construct a span position
-<a href=#22 id=22 data-nosnippet>22</a></span><span class="kw">pub fn </span>span_position(index: usize, line: usize, column: usize) -&gt; SpanPosition {
+<a href=#22 id=22 data-nosnippet>22</a></span><span class="kw">pub fn </span>position(index: usize, line: usize, column: usize) -&gt; SpanPosition {
 <a href=#23 id=23 data-nosnippet>23</a>    (index, line, column).into()
 <a href=#24 id=24 data-nosnippet>24</a>}
 <a href=#25 id=25 data-nosnippet>25</a>
@@ -53,15 +53,15 @@
 <a href=#53 id=53 data-nosnippet>53</a>    </span><span class="kw">fn </span>slice() {
 <a href=#54 id=54 data-nosnippet>54</a>        <span class="kw">let </span>source = <span class="string">"Hello\nWorld"</span>;
 <a href=#55 id=55 data-nosnippet>55</a>
-<a href=#56 id=56 data-nosnippet>56</a>        <span class="kw">let </span>span = Span::builder()
-<a href=#57 id=57 data-nosnippet>57</a>            .start(span_position(<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>))
-<a href=#58 id=58 data-nosnippet>58</a>            .end(span_position(<span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>))
-<a href=#59 id=59 data-nosnippet>59</a>            .build();
+<a href=#56 id=56 data-nosnippet>56</a>        <span class="macro">assert_eq!</span>(
+<a href=#57 id=57 data-nosnippet>57</a>            <span class="string">"Hell"</span>,
+<a href=#58 id=58 data-nosnippet>58</a>            span(position(<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>), position(<span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>)).slice(source)
+<a href=#59 id=59 data-nosnippet>59</a>        );
 <a href=#60 id=60 data-nosnippet>60</a>
-<a href=#61 id=61 data-nosnippet>61</a>        <span class="macro">assert_eq!</span>(<span class="string">"Hell"</span>, span.slice(source));
-<a href=#62 id=62 data-nosnippet>62</a>
-<a href=#63 id=63 data-nosnippet>63</a>        <span class="comment">// let span = Span::builder().range(6..11).line(2).column(6).build();
-<a href=#64 id=64 data-nosnippet>64</a>        // assert_eq!("World", span.slice(source));
-<a href=#65 id=65 data-nosnippet>65</a>    </span>}
+<a href=#61 id=61 data-nosnippet>61</a>        <span class="macro">assert_eq!</span>(
+<a href=#62 id=62 data-nosnippet>62</a>            <span class="string">"World"</span>,
+<a href=#63 id=63 data-nosnippet>63</a>            span(position(<span class="number">6</span>, <span class="number">2</span>, <span class="number">1</span>), position(<span class="number">11</span>, <span class="number">2</span>, <span class="number">6</span>)).slice(source)
+<a href=#64 id=64 data-nosnippet>64</a>        );
+<a href=#65 id=65 data-nosnippet>65</a>    }
 <a href=#66 id=66 data-nosnippet>66</a>}
 </code></pre></div></section></main></body></html>

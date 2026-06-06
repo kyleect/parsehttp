@@ -2,7 +2,7 @@
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span>crate::{
 <a href=#4 id=4 data-nosnippet>4</a>    lexing::{lex_errors::LexError, lexer::Lexer, tokens::Token},
-<a href=#5 id=5 data-nosnippet>5</a>    span::{span_position, Span},
+<a href=#5 id=5 data-nosnippet>5</a>    span::{position, Span},
 <a href=#6 id=6 data-nosnippet>6</a>};
 <a href=#7 id=7 data-nosnippet>7</a>
 <a href=#8 id=8 data-nosnippet>8</a><span class="doccomment">/// The different kinds of tokens for HTTP requests
@@ -261,8 +261,8 @@
 <a href=#261 id=261 data-nosnippet>261</a>        Token {
 <a href=#262 id=262 data-nosnippet>262</a>            kind,
 <a href=#263 id=263 data-nosnippet>263</a>            span: Span {
-<a href=#264 id=264 data-nosnippet>264</a>                start: span_position(<span class="self">self</span>.start, <span class="self">self</span>.start_line, <span class="self">self</span>.start_column),
-<a href=#265 id=265 data-nosnippet>265</a>                end: span_position(<span class="self">self</span>.current, <span class="self">self</span>.current_line, <span class="self">self</span>.current_column),
+<a href=#264 id=264 data-nosnippet>264</a>                start: position(<span class="self">self</span>.start, <span class="self">self</span>.start_line, <span class="self">self</span>.start_column),
+<a href=#265 id=265 data-nosnippet>265</a>                end: position(<span class="self">self</span>.current, <span class="self">self</span>.current_line, <span class="self">self</span>.current_column),
 <a href=#266 id=266 data-nosnippet>266</a>            },
 <a href=#267 id=267 data-nosnippet>267</a>        }
 <a href=#268 id=268 data-nosnippet>268</a>    }
