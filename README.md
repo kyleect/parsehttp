@@ -6,7 +6,11 @@
 
 - Lex HTTP Request/Response messages into tokens.
 - Parse tokens into `HttpRequest` and `HttpResponse`.
-- Validates structure not values
+- Validates structure but not values
+
+## Documentation
+
+https://kyleect.github.io/parsehttp/parsehttp/
 
 ## Usage
 
