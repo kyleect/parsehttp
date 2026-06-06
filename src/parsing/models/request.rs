@@ -8,46 +8,17 @@ use crate::parsing::models::{HttpHeader, HttpUri, HttpVersion};
 /// The method of an HTTP request
 #[derive(Debug, PartialEq)]
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
-pub enum HttpMethod {
-    GET,
-    POST,
-    PUT,
-    PATCH,
-    DELETE,
-    HEAD,
-    OPTIONS,
-    Other(String),
-}
+pub struct HttpMethod(String);
 
 impl From<&str> for HttpMethod {
     fn from(value: &str) -> Self {
-        match value {
-            "GET" => HttpMethod::GET,
-            "POST" => HttpMethod::POST,
-            "PUT" => HttpMethod::PUT,
-            "PATCH" => HttpMethod::PATCH,
-            "DELETE" => HttpMethod::DELETE,
-            "HEAD" => HttpMethod::HEAD,
-            "OPTIONS" => HttpMethod::OPTIONS,
-            _ => HttpMethod::Other(value.to_string()),
-        }
+        Self(value.to_string())
     }
 }
 
 impl Display for HttpMethod {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let string = match self {
-            HttpMethod::GET => "GET",
-            HttpMethod::POST => "POST",
-            HttpMethod::PUT => "PUT",
-            HttpMethod::PATCH => "PATCH",
-            HttpMethod::DELETE => "DELETE",
-            HttpMethod::HEAD => "HEAD",
-            HttpMethod::OPTIONS => "OPTION",
-            HttpMethod::Other(string) => string,
-        };
-
-        write!(f, "{}", string)
+        write!(f, "{}", self.0)
     }
 }
 
@@ -60,14 +31,13 @@ mod test_from_str_to_http_method {
     #[rstest]
     fn from_str_to_http_method(
         #[values(
-            ("GET", HttpMethod::GET),
-            ("POST", HttpMethod::POST),
-            ("PUT", HttpMethod::PUT),
-            ("PATCH", HttpMethod::PATCH),
-            ("DELETE", HttpMethod::DELETE),
-            ("HEAD", HttpMethod::HEAD),
-            ("OPTIONS", HttpMethod::OPTIONS),
-            ("OTHER", HttpMethod::Other(String::from("OTHER"))),
+            ("GET", "GET".into()),
+            ("POST", "POST".into()),
+            ("PUT", "PUT".into()),
+            ("PATCH", "PATCH".into()),
+            ("DELETE", "DELETE".into()),
+            ("HEAD", "HEAD".into()),
+            ("OPTIONS", "OPTIONS".into()),
         )]
         pair: (&str, HttpMethod),
     ) {
@@ -92,7 +62,7 @@ impl HttpRequest {
     pub fn get(uri: &str, headers: Vec<HttpHeader>) -> Self {
         Self {
             uri: uri.into(),
-            method: HttpMethod::GET,
+            method: "GET".into(),
             http_version: Default::default(),
             headers,
             body: None,
@@ -102,7 +72,7 @@ impl HttpRequest {
     pub fn post(uri: &str, headers: Vec<HttpHeader>, body: Option<String>) -> Self {
         Self {
             uri: uri.into(),
-            method: HttpMethod::POST,
+            method: "POST".into(),
             headers,
             body,
             http_version: Default::default(),
@@ -175,7 +145,7 @@ impl Display for HttpRequest {
 
 #[cfg(test)]
 mod request_tests {
-    use crate::parsing::models::{HttpHeader, HttpMethod, HttpRequest};
+    use crate::parsing::models::{HttpHeader, HttpRequest};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -243,7 +213,7 @@ mod request_tests {
             "https://example.com",
             vec!["User-Agent: curl/7.64.1".into()],
         );
-        assert_eq!(request.method, HttpMethod::GET);
+        assert_eq!(request.method, "GET".into());
         assert!(request.body.is_none());
 
         let expected_headers_in_order: Vec<HttpHeader> = vec!["User-Agent: curl/7.64.1".into()];
@@ -256,7 +226,7 @@ mod request_tests {
         let headers = vec!["Content-Type: application/json".into()];
         let body = Some("{\"key\": \"value\"}".to_string());
         let request = HttpRequest::post("https://example.com", headers, body);
-        assert_eq!(request.method, HttpMethod::POST);
+        assert_eq!(request.method, "POST".into());
         assert_eq!(
             request.get_body(),
             &Some("{\"key\": \"value\"}".to_string())
