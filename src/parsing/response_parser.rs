@@ -4,7 +4,7 @@ use crate::{
         parse_errors::ParsingError,
         parser::Parser,
     },
-    ResponseTokenKind, Token,
+    HttpStatusText, ResponseTokenKind, Token,
 };
 
 pub struct HttpResponseParser<'input> {
@@ -81,6 +81,27 @@ impl<'input> HttpResponseParser<'input> {
         Ok(HttpStatusCode::new(
             token.span.slice(self.source).parse::<u16>().unwrap(),
         ))
+    }
+
+    fn parse_status_text(&mut self) -> Result<HttpStatusText, ParsingError> {
+        let token = match self.peek() {
+            Some(token) => *token,
+            None => return Err(ParsingError::UnexpectedEof),
+        };
+
+        if token.kind != ResponseTokenKind::ReasonPhrase {
+            return Err(ParsingError::UnexpectedToken {
+                line: token.span.start.line,
+                message: format!(
+                    "Expected a status text but got: '{}'",
+                    token.span.slice(self.source)
+                ),
+            });
+        }
+
+        self.advance();
+
+        Ok(token.span.slice(self.source).into())
     }
 
     fn parse_version(&mut self) -> Result<HttpVersion, ParsingError> {
@@ -215,7 +236,7 @@ impl<'input> Parser<ResponseTokenKind, HttpResponse> for HttpResponseParser<'inp
 
         self.consume(ResponseTokenKind::Space)?;
 
-        self.consume(ResponseTokenKind::ReasonPhrase)?;
+        let status_text = self.parse_status_text()?;
 
         self.consume(ResponseTokenKind::CrLf)?;
 
@@ -233,6 +254,7 @@ impl<'input> Parser<ResponseTokenKind, HttpResponse> for HttpResponseParser<'inp
 
         let request = HttpResponse {
             status_code,
+            status_text,
             headers,
             body,
         };

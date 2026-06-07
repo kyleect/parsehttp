@@ -14,7 +14,8 @@ use crate::lexing::response_lexer::HttpResponseLexer;
 pub use crate::lexing::response_lexer::ResponseTokenKind;
 pub use crate::lexing::tokens::Token;
 pub use crate::parsing::models::{
-    HttpHeader, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode, HttpUri, HttpVersion,
+    HttpHeader, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode, HttpStatusText, HttpUri,
+    HttpVersion,
 };
 pub use crate::parsing::parse_errors::ParsingError;
 pub use crate::span::{position, span, Span};

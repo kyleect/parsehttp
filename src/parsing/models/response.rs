@@ -11,14 +11,21 @@ use crate::parsing::models::HttpHeader;
 #[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct HttpResponse {
     pub status_code: HttpStatusCode,
+    pub status_text: HttpStatusText,
     pub headers: Vec<HttpHeader>,
     pub body: Option<String>,
 }
 
 impl HttpResponse {
-    pub fn new(status_code: HttpStatusCode, headers: Vec<HttpHeader>, body: Option<&str>) -> Self {
+    pub fn new(
+        status_code: HttpStatusCode,
+        status_text: HttpStatusText,
+        headers: Vec<HttpHeader>,
+        body: Option<&str>,
+    ) -> Self {
         Self {
             status_code,
+            status_text,
             headers,
             body: body.map(|b| b.to_string()),
         }
@@ -110,6 +117,34 @@ impl From<u16> for HttpStatusCode {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
+pub struct HttpStatusText(String);
+
+impl HttpStatusText {
+    pub fn new(status_text: &str) -> Self {
+        status_text.into()
+    }
+}
+
+impl fmt::Display for HttpStatusText {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl From<String> for HttpStatusText {
+    fn from(value: String) -> Self {
+        HttpStatusText(value)
+    }
+}
+
+impl From<&str> for HttpStatusText {
+    fn from(value: &str) -> Self {
+        HttpStatusText(value.to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -136,7 +171,7 @@ mod tests {
     fn test_http_response_new() {
         let headers = vec!["Content-Type: application/json".into()];
         let body = Some("{\"message\": \"Hello, world!\"}");
-        let response = HttpResponse::new(200.into(), headers.clone(), body);
+        let response = HttpResponse::new(200.into(), "OK".into(), headers.clone(), body);
 
         assert_eq!(response.status_code.0, 200);
         assert_eq!(response.headers.len(), 1);
@@ -149,6 +184,7 @@ mod tests {
     fn test_http_response_headers() {
         let response = HttpResponse::new(
             200.into(),
+            "OK".into(),
             vec!["Content-Type: application/json".into()].clone(),
             None,
         );
@@ -162,7 +198,7 @@ mod tests {
     #[test]
     fn test_http_response_get_header() {
         let headers = vec!["Content-Type: application/json".into()];
-        let response = HttpResponse::new(200.into(), headers.clone(), None);
+        let response = HttpResponse::new(200.into(), "OK".into(), headers.clone(), None);
         let header = response.get_header("Content-Type");
         assert_eq!(
             Some(&HttpHeader::new("Content-Type", "application/json")),
@@ -174,6 +210,7 @@ mod tests {
     fn test_http_response_set_header() {
         let mut response = HttpResponse::new(
             200.into(),
+            "OK".into(),
             vec!["Content-Type: application/json".into()],
             None,
         );
@@ -204,13 +241,13 @@ mod tests {
     #[test]
     fn test_http_response_get_body() {
         let body = Some("{\"message\": \"Hello, world!\"}");
-        let response = HttpResponse::new(200.into(), vec![], body);
+        let response = HttpResponse::new(200.into(), "OK".into(), vec![], body);
         assert_eq!(response.get_body(), &body.map(|b| b.to_string()));
     }
 
     #[test]
     fn test_http_response_set_body() {
-        let mut response = HttpResponse::new(200.into(), vec![], None);
+        let mut response = HttpResponse::new(200.into(), "OK".into(), vec![], None);
         let new_body = Some("{\"message\": \"Goodbye, world!\"}").map(|b| b.to_string());
         response.set_body(new_body.clone());
         assert_eq!(response.get_body(), &new_body);
