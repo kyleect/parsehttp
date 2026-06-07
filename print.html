@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-35577845.js";
+            window.path_to_searchindex_js = "searchindex-0e98fce6.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-62925e48.js"></script>
+        <script src="toc-988c100e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -369,6 +369,44 @@ assert_eq!(
     request
 );
 <span class="boring">}</span></code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="parsehttp-cli"><a class="header" href="#parsehttp-cli">parsehttp CLI</a></h1>
+<h2 id="lexing-1"><a class="header" href="#lexing-1">Lexing</a></h2>
+<pre><code class="language-sh">cargo run --example lex_request ./requests/post.http
+
+# Method
+# Space
+# Uri
+# Space
+# HttpVersion
+# CrLf
+# HeaderName
+# :
+# HeaderValue
+# CrLf
+# CrLf
+# Body
+# Eof
+
+</code></pre>
+<h2 id="parsing-1"><a class="header" href="#parsing-1">Parsing</a></h2>
+<pre><code class="language-sh">cargo run --example parse_request ./requests/post.http
+
+# POST / HTTP/1.1
+# Host: example.com
+
+# body
+</code></pre>
+<h2 id="parsing-as-json"><a class="header" href="#parsing-as-json">Parsing As Json</a></h2>
+<pre><code class="language-sh">cargo run --example request_to_json --features json ./requests/post.http &gt; jq .headers
+
+# [
+#   [
+#     "Host",
+#     "example.com"
+#   ]
+# ]
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="links"><a class="header" href="#links">Links</a></h1>
 <ul>
