@@ -48,7 +48,7 @@ jobs:
         run: cargo install mdbook --locked
 
       - name: Build Rust Docs
-        run: cargo doc --no-deps
+        run: cargo doc --no-deps --static-root-path /api/
 
       - name: Build mdBook
         run: mdbook build ./book
