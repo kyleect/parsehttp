@@ -1,4 +1,4 @@
-# parsehttp
+# 📄 parsehttp
 
 [![build-artifacts](https://github.com/kyleect/parsehttp/actions/workflows/build-artifacts.yml/badge.svg)](https://github.com/kyleect/parsehttp/actions/workflows/build-artifacts.yml)
 
