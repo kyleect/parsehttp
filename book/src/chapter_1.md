@@ -145,7 +145,7 @@ assert_eq!(
 );
 ```
 
-## Getting Token Text/Lexme From Source Text
+## Extract Text From Source Text
 
 A token can be used to extract the text of a token from the source text using `token.slice(source_text)`.
 
