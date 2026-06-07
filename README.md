@@ -26,9 +26,10 @@ assert_eq!(
 
 ## What It Does
 
-- Lex HTTP Request/Response messages into tokens.
-- Parse tokens into `HttpRequest` and `HttpResponse`.
-- Validates structure but not values
+- Parse source text in to `HttpRequest` and `HttpResponse`
+- Validates request/response structure but not literal values
+- Provides span, line, and column information
+- Use tokens to get slices of the source text
 
 ## Documentation
 
