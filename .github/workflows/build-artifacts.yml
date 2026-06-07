@@ -54,7 +54,7 @@ jobs:
         run: |
           find target/doc -name "*.html" -type f | while read -r file; do
             sed -Ei \
-              -e 's|(href|src)="/([^"]+)"|\1="/api/\2"|g' \
+              's#(href|src)="/([^"]+)"#\1="/api/\2"#g' \
               "$file"
           done
 
