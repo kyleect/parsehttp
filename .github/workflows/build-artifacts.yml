@@ -52,7 +52,7 @@ jobs:
 
       - name: Rewrite Rustdoc Asset Paths
         run: |
-          find target/doc -name "*.html" -type f | while read -r file; do
+          find book -name "*.html" -type f | while read -r file; do
             sed -Ei \
               's#(href|src)="/([^"]+)"#\1="/api/\2"#g' \
               "$file"
