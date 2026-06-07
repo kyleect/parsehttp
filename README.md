@@ -10,7 +10,8 @@
 
 ## Documentation
 
-https://kyleect.github.io/parsehttp/parsehttp/
+- [Docs](https://kyleect.github.io/parsehttp/)
+- [API](https://kyleect.github.io/parsehttp/api/parsehttp/)
 
 ## Usage
 
