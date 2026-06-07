@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Lexing - parsehttp</title>
+        <title>Links - parsehttp</title>
 
 
         <!-- Custom HTML head -->
@@ -174,184 +174,19 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="lexing"><a class="header" href="#lexing">Lexing</a></h1>
-<p>Convert an HTTP request or response source string in to a list of tokens using <code>parsehttp::lex_request(source_text) -&gt; Vec&lt;Token&lt;RequestTokenKind&gt;</code>.</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use parsehttp::{lex_request, span, position, RequestTokenKind, Token};
-
-let request_src = "\
-    POST / HTTP/1.1\r\n\
-    Host: example.com\r\n\
-    \r\n\
-    body";
-
-let tokens: Vec&lt;Token&lt;RequestTokenKind&gt;&gt; = lex_request(request_src).unwrap();
-<span class="boring">}</span></code></pre>
-<h2 id="tokens"><a class="header" href="#tokens">Tokens</a></h2>
-<p>A <code>parsehttp::Token&lt;TokenKind&gt;</code> represents the atomic parts of an HTTP request or response.</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct Token&lt;TokenKind&gt; {
-    pub kind: TokenKind,
-    pub span: Span,
-}
-
-pub enum RequestTokenKind {
-    Method,
-    Uri,
-    Version,
-    HeaderName,
-    HeaderValue,
-    Colon,
-    Space,
-    CrLf,
-    Body,
-    Eof,
-}
-
-pub enum ResponseTokenKind {
-    Version,
-    StatusCode,
-    ReasonPhrase,
-    HeaderName,
-    HeaderValue,
-    Colon,
-    Space,
-    CrLf,
-    Body,
-    Eof,
-}
-<span class="boring">}</span></code></pre>
-<h2 id="token-spans"><a class="header" href="#token-spans">Token Spans</a></h2>
-<p>Tokens record both the starting and ending <code>Span</code> and <code>SpanPosition</code>. These values are recorded during the lexing pass.</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct Span {
-    pub start: SpanPosition,
-    pub end: SpanPosition,
-}
-
-pub struct SpanPosition {
-    pub index: usize,  // (0 index)
-    pub line: usize,   // (1 index)
-    pub column: usize, // (1 index)
-}
-<span class="boring">}</span></code></pre>
-<p>There are two helper functions for creating spans:</p>
+                        <h1 id="links"><a class="header" href="#links">Links</a></h1>
 <ul>
-<li><code>parsehttp::span(start: SpanPosition, end: SpanPosition) -&gt; Span</code></li>
-<li><code>parsehttp::position(index: usize, line: usize, column: usize) -&gt; SpanPosition</code></li>
+<li><a href="https://kyleect.github.io/parsehttp/api/parsehttp/">API Docs</a></li>
 </ul>
-<h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use parsehttp::{lex_request, span, position, RequestTokenKind, Token};
-
-let request_src = "\
-    POST / HTTP/1.1\r\n\
-    Host: example.com\r\n\
-    \r\n\
-    body";
-
-let tokens: Vec&lt;Token&lt;RequestTokenKind&gt;&gt; = lex_request(request_src).unwrap();
-
-assert_eq!(
-    vec![
-        Token {
-            kind: RequestTokenKind::Method,
-            span: span(position(0, 1, 1), position(4, 1, 5)),
-        },
-        Token {
-            kind: RequestTokenKind::Space,
-            span: span(position(4, 1, 5), position(5, 1, 6)),
-        },
-        Token {
-            kind: RequestTokenKind::Uri,
-            span: span(position(5, 1, 6), position(6, 1, 7)),
-        },
-        Token {
-            kind: RequestTokenKind::Space,
-            span: span(position(6, 1, 7), position(7, 1, 8)),
-        },
-        Token {
-            kind: RequestTokenKind::Version,
-            span: span(position(7, 1, 8), position(15, 1, 16)),
-        },
-        Token {
-            kind: RequestTokenKind::CrLf,
-            span: span(position(15, 1, 16), position(17, 1, 18)),
-        },
-        Token {
-            kind: RequestTokenKind::HeaderName,
-            span: span(position(17, 2, 1), position(21, 2, 5)),
-        },
-        Token {
-            kind: RequestTokenKind::Colon,
-            span: span(position(21, 2, 5), position(22, 2, 6)),
-        },
-        Token {
-            kind: RequestTokenKind::HeaderValue,
-            span: span(position(23, 2, 7), position(34, 2, 18)),
-        },
-        Token {
-            kind: RequestTokenKind::CrLf,
-            span: span(position(34, 2, 18), position(36, 2, 20)),
-        },
-        Token {
-            kind: RequestTokenKind::CrLf,
-            span: span(position(36, 3, 1), position(38, 3, 3)),
-        },
-        Token {
-            kind: RequestTokenKind::Body,
-            span: span(position(38, 4, 1), position(42, 4, 1)),
-        },
-        Token {
-            kind: RequestTokenKind::Eof,
-            span: span(position(38, 4, 1), position(42, 4, 1)),
-        },
-    ],
-    tokens,
-);
-<span class="boring">}</span></code></pre>
-<h2 id="getting-token-textlexme-from-source-text"><a class="header" href="#getting-token-textlexme-from-source-text">Getting Token Text/Lexme From Source Text</a></h2>
-<p>A token can be used to extract the text of a token from the source text using <code>token.slice(source_text)</code>.</p>
-<h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use parsehttp::{lex_request, RequestTokenKind, Token};
-
-let request_src = "\
-    POST / HTTP/1.1\r\n\
-    Host: example.com\r\n\
-    \r\n\
-    body";
-
-let tokens: Vec&lt;Token&lt;RequestTokenKind&gt;&gt; = lex_request(request_src).unwrap();
-
-assert_eq!(tokens[0].slice(src), "POST");
-assert_eq!(tokens[1].slice(src), " ");
-assert_eq!(tokens[2].slice(src), "/");
-assert_eq!(tokens[3].slice(src), " ");
-assert_eq!(tokens[4].slice(src), "HTTP/1.1");
-assert_eq!(tokens[5].slice(src), "\r\n");
-assert_eq!(tokens[6].slice(src), "Host");
-assert_eq!(tokens[7].slice(src), ":");
-assert_eq!(tokens[8].slice(src), "example.com");
-assert_eq!(tokens[9].slice(src), "\r\n");
-assert_eq!(tokens[10].slice(src), "\r\n");
-assert_eq!(tokens[11].slice(src), "body");
-assert_eq!(tokens[12].slice(src), "body"); // Eof
-<span class="boring">}</span></code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-
-                            <a rel="next prefetch" href="chapter_2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            <a rel="prev" href="chapter_2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
+
 
                         <div style="clear: both"></div>
                     </nav>
@@ -359,10 +194,10 @@ assert_eq!(tokens[12].slice(src), "body"); // Eof
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-
-                    <a rel="next prefetch" href="chapter_2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    <a rel="prev" href="chapter_2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
+
             </nav>
 
         </div>
