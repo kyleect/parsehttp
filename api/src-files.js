@@ -1,2 +1,2 @@
-createSrcSidebar('[["parsehttp",["",[["lexing",[],["lex_errors.rs","lexer.rs","mod.rs","request_lexer.rs","response_lexer.rs","tokens.rs"]],["parsing",[["models",[],["headers.rs","mod.rs","request.rs","response.rs","uri.rs","version.rs"]]],["mod.rs","parse_errors.rs","parser.rs","request_parser.rs","response_parser.rs"]]],["lib.rs","span.rs"]]]]');
-//{"start":19,"fragment_lengths":[327]}
+createSrcSidebar('[["parsehttp",["",[["lexing",[],["lex_errors.rs","lexer.rs","mod.rs","request_lexer.rs","response_lexer.rs","tokens.rs"]],["parsing",[["models",[],["headers.rs","mod.rs","request.rs","response.rs","uri.rs","version.rs"]]],["message_parser.rs","mod.rs","parse_errors.rs","request_parser.rs","response_parser.rs"]]],["lib.rs","span.rs"]]]]');
+//{"start":19,"fragment_lengths":[335]}
