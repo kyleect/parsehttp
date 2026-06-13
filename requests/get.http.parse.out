@@ -1,0 +1,67 @@
+[
+  {
+    "uri": "/",
+    "method": "GET",
+    "http_version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "example.com"
+      ]
+    ],
+    "body": null
+  },
+  {
+    "uri": {
+      "start": {
+        "index": 4,
+        "line": 1,
+        "column": 5
+      },
+      "end": {
+        "index": 5,
+        "line": 1,
+        "column": 6
+      }
+    },
+    "method": {
+      "start": {
+        "index": 0,
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "index": 3,
+        "line": 1,
+        "column": 4
+      }
+    },
+    "http_version": {
+      "start": {
+        "index": 6,
+        "line": 1,
+        "column": 7
+      },
+      "end": {
+        "index": 14,
+        "line": 1,
+        "column": 15
+      }
+    },
+    "headers": [
+      {
+        "start": {
+          "index": 16,
+          "line": 2,
+          "column": 1
+        },
+        "end": {
+          "index": 33,
+          "line": 2,
+          "column": 18
+        }
+      }
+    ],
+    "body": null
+  }
+]

@@ -1,0 +1,12 @@
+Method 0..5 @ 1:1 | lenght: 5
+Space 5..6 @ 1:6 | lenght: 1
+Uri 6..7 @ 1:7 | lenght: 1
+Space 7..8 @ 1:8 | lenght: 1
+HttpVersion 8..16 @ 1:9 | lenght: 8
+CrLf 16..18 @ 1:17 | lenght: 2
+HeaderName 18..22 @ 2:1 | lenght: 4
+: 22..23 @ 2:5 | lenght: 1
+HeaderValue 24..35 @ 2:7 | lenght: 11
+CrLf 35..37 @ 2:18 | lenght: 2
+CrLf 37..39 @ 3:1 | lenght: 2
+Eof 37..39 @ 3:1 | lenght: 2

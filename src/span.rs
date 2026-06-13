@@ -1,4 +1,6 @@
 use bon::Builder;
+#[cfg(feature = "json")]
+use serde::{Deserialize, Serialize};
 
 use crate::Token;
 
@@ -19,6 +21,7 @@ pub fn get_spanned_lexme<T>(token: Token<T>, source: &str) -> Spanned<String> {
 
 /// A range and position of text within source text
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Builder)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct SpanPosition {
     pub index: usize,
     pub line: usize,
@@ -42,6 +45,7 @@ pub fn position(index: usize, line: usize, column: usize) -> SpanPosition {
 
 /// A range and position of text within source text
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Builder)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
 pub struct Span {
     pub start: SpanPosition,
     pub end: SpanPosition,

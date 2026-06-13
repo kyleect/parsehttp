@@ -2,3 +2,5 @@
 set -euo pipefail
 
 cargo test
+./scripts/tests-requests-lex.sh
+./scripts/tests-requests-parse.sh

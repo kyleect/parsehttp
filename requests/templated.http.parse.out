@@ -1,0 +1,67 @@
+[
+  {
+    "uri": "{{@url}}",
+    "method": "{{@method}}",
+    "http_version": "{{@version}}",
+    "headers": [
+      [
+        "{{@Host}}",
+        "{{@env}}"
+      ]
+    ],
+    "body": null
+  },
+  {
+    "uri": {
+      "start": {
+        "index": 12,
+        "line": 1,
+        "column": 13
+      },
+      "end": {
+        "index": 20,
+        "line": 1,
+        "column": 21
+      }
+    },
+    "method": {
+      "start": {
+        "index": 0,
+        "line": 1,
+        "column": 1
+      },
+      "end": {
+        "index": 11,
+        "line": 1,
+        "column": 12
+      }
+    },
+    "http_version": {
+      "start": {
+        "index": 21,
+        "line": 1,
+        "column": 22
+      },
+      "end": {
+        "index": 33,
+        "line": 1,
+        "column": 34
+      }
+    },
+    "headers": [
+      {
+        "start": {
+          "index": 35,
+          "line": 2,
+          "column": 1
+        },
+        "end": {
+          "index": 54,
+          "line": 2,
+          "column": 20
+        }
+      }
+    ],
+    "body": null
+  }
+]
