@@ -7,7 +7,7 @@ fn main() {
     let contents = read_to_string(path).expect("should read file");
 
     let tokens = lex_request(&contents).expect("should lex");
-    let request = parse_request(&contents, tokens).expect("should parse");
+    let (request, _) = parse_request(&contents, tokens).expect("should parse");
 
     println!("{}", request);
 }

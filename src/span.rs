@@ -1,5 +1,22 @@
 use bon::Builder;
 
+use crate::Token;
+
+/// A pair of `T` data and [`Span`]
+pub type Spanned<T> = (T, Span);
+
+pub fn get_spanned_value<T>((value, _): Spanned<T>) -> T {
+    value
+}
+
+pub fn get_spanned_span<T>((_, span): Spanned<T>) -> Span {
+    span
+}
+
+pub fn get_spanned_lexme<T>(token: Token<T>, source: &str) -> Spanned<String> {
+    (token.span.slice(source).to_string(), token.span)
+}
+
 /// A range and position of text within source text
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Builder)]
 pub struct SpanPosition {

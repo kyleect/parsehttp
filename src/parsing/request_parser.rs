@@ -4,6 +4,8 @@ use crate::{
         models::{HttpHeader, HttpMethod, HttpRequest, HttpUri, HttpVersion},
         parser::Parser,
     },
+    span::{get_spanned_lexme, get_spanned_span, get_spanned_value},
+    HttpRequestSpans, Spanned,
 };
 
 use super::parse_errors::ParsingError;
@@ -61,7 +63,7 @@ impl<'input> HttpRequestParser<'input> {
         self.current >= self.tokens.len()
     }
 
-    fn parse_method(&mut self) -> Result<HttpMethod, ParsingError> {
+    fn parse_method(&mut self) -> Result<Spanned<HttpMethod>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
@@ -79,10 +81,10 @@ impl<'input> HttpRequestParser<'input> {
 
         self.advance();
 
-        Ok(token.span.slice(self.source).into())
+        Ok((token.span.slice(self.source).into(), token.span))
     }
 
-    fn parse_uri(&mut self) -> Result<HttpUri, ParsingError> {
+    fn parse_uri(&mut self) -> Result<Spanned<HttpUri>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
@@ -98,10 +100,10 @@ impl<'input> HttpRequestParser<'input> {
 
         self.advance();
 
-        Ok(lexme.into())
+        Ok((lexme.into(), token.span))
     }
 
-    fn parse_version(&mut self) -> Result<HttpVersion, ParsingError> {
+    fn parse_version(&mut self) -> Result<Spanned<HttpVersion>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
@@ -119,7 +121,7 @@ impl<'input> HttpRequestParser<'input> {
 
         self.advance();
 
-        Ok(token.span.slice(self.source).into())
+        Ok((token.span.slice(self.source).into(), token.span))
     }
 
     fn parse_header_name(&mut self) -> Result<Token<RequestTokenKind>, ParsingError> {
@@ -162,7 +164,7 @@ impl<'input> HttpRequestParser<'input> {
         Ok(value_tok)
     }
 
-    fn parse_headers(&mut self) -> Result<Vec<HttpHeader>, ParsingError> {
+    fn parse_headers(&mut self) -> Result<Vec<Spanned<HttpHeader>>, ParsingError> {
         let mut headers = Vec::new();
 
         while !self.check(RequestTokenKind::CrLf) && !self.is_at_end() {
@@ -182,29 +184,34 @@ impl<'input> HttpRequestParser<'input> {
                 });
             }
 
-            headers.push(HttpHeader::new(
+            let header = HttpHeader::new(
                 name_tok.span.slice(self.source),
                 value_tok.span.slice(self.source),
-            ));
+            );
+
+            let header_span = crate::span::span(name_tok.span.start, value_tok.span.end);
+
+            headers.push((header, header_span));
         }
 
         Ok(headers)
     }
 
-    fn parse_body(&mut self) -> Result<Option<String>, ParsingError> {
-        let token = match self.peek() {
-            Some(token) => *token,
-            None => return Ok(None),
+    fn parse_body(&mut self) -> Result<Option<Spanned<String>>, ParsingError> {
+        let token = if let Some(token) = self.peek() {
+            *token
+        } else {
+            return Ok(None);
         };
 
         match token.kind {
             RequestTokenKind::CrLf => {
                 self.advance();
-                Ok(Some(token.span.slice(self.source).to_string()))
+                Ok(Some(get_spanned_lexme(token, self.source)))
             }
             RequestTokenKind::Body => {
                 self.advance();
-                Ok(Some(token.span.slice(self.source).to_string()))
+                Ok(Some(get_spanned_lexme(token, self.source)))
             }
             _ => Err(ParsingError::UnexpectedToken {
                 line: token.span.start.line,
@@ -218,19 +225,22 @@ impl<'input> HttpRequestParser<'input> {
     }
 }
 
-impl<'input> Parser<RequestTokenKind, HttpRequest> for HttpRequestParser<'input> {
-    fn parse(mut self, tokens: Vec<Token<RequestTokenKind>>) -> Result<HttpRequest, ParsingError> {
+impl<'input> Parser<RequestTokenKind, HttpRequest, HttpRequestSpans> for HttpRequestParser<'input> {
+    fn parse(
+        mut self,
+        tokens: Vec<Token<RequestTokenKind>>,
+    ) -> Result<(HttpRequest, HttpRequestSpans), ParsingError> {
         self.tokens = tokens;
 
-        let method = self.parse_method()?;
+        let (method, method_span) = self.parse_method()?;
 
         self.consume(RequestTokenKind::Space)?;
 
-        let uri = self.parse_uri()?;
+        let (uri, uri_span) = self.parse_uri()?;
 
         self.consume(RequestTokenKind::Space)?;
 
-        let http_version = self.parse_version()?;
+        let (http_version, http_version_span) = self.parse_version()?;
 
         self.consume(RequestTokenKind::CrLf)?;
 
@@ -246,14 +256,22 @@ impl<'input> Parser<RequestTokenKind, HttpRequest> for HttpRequestParser<'input>
             self.parse_body()?
         };
 
+        let spans = HttpRequestSpans {
+            uri: uri_span,
+            method: method_span,
+            http_version: http_version_span,
+            headers: headers.clone().into_iter().map(get_spanned_span).collect(),
+            body: body.clone().map(get_spanned_span),
+        };
+
         let request = HttpRequest {
             uri,
             method,
             http_version,
-            headers,
-            body,
+            headers: headers.into_iter().map(|(header, _)| header).collect(),
+            body: body.map(get_spanned_value),
         };
 
-        Ok(request)
+        Ok((request, spans))
     }
 }

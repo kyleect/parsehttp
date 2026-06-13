@@ -3,7 +3,10 @@ use std::fmt::Display;
 #[cfg(feature = "json")]
 use serde::{Deserialize, Serialize};
 
-use crate::parsing::models::{HttpHeader, HttpUri, HttpVersion};
+use crate::{
+    parsing::models::{HttpHeader, HttpUri, HttpVersion},
+    position, span, Span,
+};
 
 /// The method of an HTTP request
 #[derive(Debug, PartialEq)]
@@ -44,6 +47,29 @@ mod test_from_str_to_http_method {
         let (input, expected) = pair;
 
         assert_eq!(expected, input.into())
+    }
+}
+
+/// Span information for a request
+#[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
+pub struct HttpRequestSpans {
+    pub uri: Span,
+    pub method: Span,
+    pub http_version: Span,
+    pub headers: Vec<Span>,
+    pub body: Option<Span>,
+}
+
+impl Default for HttpRequestSpans {
+    fn default() -> Self {
+        Self {
+            uri: span(position(0, 0, 0), position(0, 0, 0)),
+            method: span(position(0, 0, 0), position(0, 0, 0)),
+            http_version: span(position(0, 0, 0), position(0, 0, 0)),
+            headers: vec![span(position(0, 0, 0), position(0, 0, 0))],
+            body: Some(span(position(0, 0, 0), position(0, 0, 0))),
+        }
     }
 }
 
@@ -150,37 +176,33 @@ mod request_tests {
 
     #[test]
     fn test_get_request_to_string() {
-        let actual = format!(
-            "{}",
-            HttpRequest::get("/hello", vec![("Host", "example.com").into()])
-        );
+        let request = HttpRequest::get("/hello", vec![("Host", "example.com").into()]);
 
-        let expected = "\
+        assert_eq!(
+            "\
             GET /hello HTTP/1.1\r\n\
             Host: example.com\r\n\
-            \r\n";
-
-        assert_eq!(expected, actual);
+            \r\n",
+            request.to_string()
+        );
     }
 
     #[test]
     fn test_post_request_to_string() {
-        let actual = format!(
-            "{}",
-            HttpRequest::post(
-                "/hello",
-                vec![("Host", "example.com").into()],
-                Some("body".to_string()),
-            )
+        let request = HttpRequest::post(
+            "/hello",
+            vec![("Host", "example.com").into()],
+            Some("body".to_string()),
         );
 
-        let expected = "\
+        assert_eq!(
+            "\
             POST /hello HTTP/1.1\r\n\
             Host: example.com\r\n\
             \r\n\
-            body";
-
-        assert_eq!(expected, actual);
+            body",
+            request.to_string()
+        );
     }
 
     #[test]

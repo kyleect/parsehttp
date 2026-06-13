@@ -14,11 +14,11 @@ use crate::lexing::response_lexer::HttpResponseLexer;
 pub use crate::lexing::response_lexer::ResponseTokenKind;
 pub use crate::lexing::tokens::Token;
 pub use crate::parsing::models::{
-    HttpHeader, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode, HttpStatusText, HttpUri,
-    HttpVersion,
+    HttpHeader, HttpMethod, HttpRequest, HttpRequestSpans, HttpResponse, HttpResponseSpans,
+    HttpStatusCode, HttpStatusText, HttpUri, HttpVersion,
 };
 pub use crate::parsing::parse_errors::ParsingError;
-pub use crate::span::{position, span, Span};
+pub use crate::span::{position, span, Span, Spanned};
 
 /// Lex a HTTP request from a string in to tokens
 pub fn lex_request(src: &str) -> Result<Vec<Token<RequestTokenKind>>, LexError> {
@@ -34,7 +34,7 @@ pub fn lex_response(src: &str) -> Result<Vec<Token<ResponseTokenKind>>, LexError
 pub fn parse_request(
     src: &str,
     tokens: Vec<Token<RequestTokenKind>>,
-) -> Result<HttpRequest, ParsingError> {
+) -> Result<(HttpRequest, HttpRequestSpans), ParsingError> {
     HttpRequestParser::new(src).parse(tokens)
 }
 
@@ -42,6 +42,6 @@ pub fn parse_request(
 pub fn parse_response(
     src: &str,
     tokens: Vec<Token<ResponseTokenKind>>,
-) -> Result<HttpResponse, ParsingError> {
+) -> Result<(HttpResponse, HttpResponseSpans), ParsingError> {
     HttpResponseParser::new(src).parse(tokens)
 }

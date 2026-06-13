@@ -1,10 +1,11 @@
 use crate::{
     parsing::{
-        models::{HttpHeader, HttpResponse, HttpStatusCode, HttpVersion},
+        models::{HttpHeader, HttpResponse, HttpResponseSpans, HttpStatusCode, HttpVersion},
         parse_errors::ParsingError,
         parser::Parser,
     },
-    HttpStatusText, ResponseTokenKind, Token,
+    span::{get_spanned_span, get_spanned_value},
+    HttpStatusText, ResponseTokenKind, Spanned, Token,
 };
 
 pub struct HttpResponseParser<'input> {
@@ -60,7 +61,7 @@ impl<'input> HttpResponseParser<'input> {
         self.current >= self.tokens.len()
     }
 
-    fn parse_status_code(&mut self) -> Result<HttpStatusCode, ParsingError> {
+    fn parse_status_code(&mut self) -> Result<Spanned<HttpStatusCode>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
@@ -78,12 +79,13 @@ impl<'input> HttpResponseParser<'input> {
 
         self.advance();
 
-        Ok(HttpStatusCode::new(
-            token.span.slice(self.source).parse::<u16>().unwrap(),
+        Ok((
+            HttpStatusCode::new(token.span.slice(self.source).parse::<u16>().unwrap()),
+            token.span,
         ))
     }
 
-    fn parse_status_text(&mut self) -> Result<HttpStatusText, ParsingError> {
+    fn parse_status_text(&mut self) -> Result<Spanned<HttpStatusText>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
@@ -101,10 +103,10 @@ impl<'input> HttpResponseParser<'input> {
 
         self.advance();
 
-        Ok(token.span.slice(self.source).into())
+        Ok((token.span.slice(self.source).into(), token.span))
     }
 
-    fn parse_version(&mut self) -> Result<HttpVersion, ParsingError> {
+    fn parse_version(&mut self) -> Result<Spanned<HttpVersion>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Err(ParsingError::UnexpectedEof),
@@ -122,7 +124,7 @@ impl<'input> HttpResponseParser<'input> {
 
         self.advance();
 
-        Ok(token.span.slice(self.source).into())
+        Ok((token.span.slice(self.source).into(), token.span))
     }
 
     fn parse_header_name(&mut self) -> Result<Token<ResponseTokenKind>, ParsingError> {
@@ -165,7 +167,7 @@ impl<'input> HttpResponseParser<'input> {
         Ok(value_tok)
     }
 
-    fn parse_headers(&mut self) -> Result<Vec<HttpHeader>, ParsingError> {
+    fn parse_headers(&mut self) -> Result<Vec<Spanned<HttpHeader>>, ParsingError> {
         let mut headers = Vec::new();
 
         while !self.check(ResponseTokenKind::CrLf) && !self.is_at_end() {
@@ -185,16 +187,20 @@ impl<'input> HttpResponseParser<'input> {
                 });
             }
 
-            headers.push(HttpHeader::new(
+            let header = HttpHeader::new(
                 name_tok.span.slice(self.source),
                 value_tok.span.slice(self.source),
-            ));
+            );
+
+            let header_span = crate::span::span(name_tok.span.start, value_tok.span.end);
+
+            headers.push((header, header_span));
         }
 
         Ok(headers)
     }
 
-    fn parse_body(&mut self) -> Result<Option<String>, ParsingError> {
+    fn parse_body(&mut self) -> Result<Option<Spanned<String>>, ParsingError> {
         let token = match self.peek() {
             Some(token) => *token,
             None => return Ok(None),
@@ -203,11 +209,17 @@ impl<'input> HttpResponseParser<'input> {
         match token.kind {
             ResponseTokenKind::CrLf => {
                 self.advance();
-                Ok(Some(token.span.slice(self.source).to_string()))
+                Ok(Some((
+                    token.span.slice(self.source).to_string(),
+                    token.span,
+                )))
             }
             ResponseTokenKind::Body => {
                 self.advance();
-                Ok(Some(token.span.slice(self.source).to_string()))
+                Ok(Some((
+                    token.span.slice(self.source).to_string(),
+                    token.span,
+                )))
             }
             _ => Err(ParsingError::UnexpectedToken {
                 line: token.span.start.line,
@@ -221,22 +233,24 @@ impl<'input> HttpResponseParser<'input> {
     }
 }
 
-impl<'input> Parser<ResponseTokenKind, HttpResponse> for HttpResponseParser<'input> {
+impl<'input> Parser<ResponseTokenKind, HttpResponse, HttpResponseSpans>
+    for HttpResponseParser<'input>
+{
     fn parse(
         mut self,
         tokens: Vec<Token<ResponseTokenKind>>,
-    ) -> Result<HttpResponse, ParsingError> {
+    ) -> Result<(HttpResponse, HttpResponseSpans), ParsingError> {
         self.tokens = tokens;
 
-        self.parse_version()?;
+        let (version, version_span) = self.parse_version()?;
 
         self.consume(ResponseTokenKind::Space)?;
 
-        let status_code = self.parse_status_code()?;
+        let (status_code, status_code_span) = self.parse_status_code()?;
 
         self.consume(ResponseTokenKind::Space)?;
 
-        let status_text = self.parse_status_text()?;
+        let (status_text, status_text_span) = self.parse_status_text()?;
 
         self.consume(ResponseTokenKind::CrLf)?;
 
@@ -253,12 +267,25 @@ impl<'input> Parser<ResponseTokenKind, HttpResponse> for HttpResponseParser<'inp
         };
 
         let request = HttpResponse {
+            version,
             status_code,
             status_text,
-            headers,
-            body,
+            headers: headers
+                .clone()
+                .into_iter()
+                .map(|(header, _)| header)
+                .collect(),
+            body: body.clone().map(get_spanned_value),
         };
 
-        Ok(request)
+        let spans = HttpResponseSpans {
+            http_version: version_span,
+            status_code: status_code_span,
+            status_text: status_text_span,
+            headers: headers.into_iter().map(get_spanned_span).collect(),
+            body: body.map(get_spanned_span),
+        };
+
+        Ok((request, spans))
     }
 }

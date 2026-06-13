@@ -5,7 +5,7 @@ mod uri;
 mod version;
 
 pub use headers::HttpHeader;
-pub use request::{HttpMethod, HttpRequest};
-pub use response::{HttpResponse, HttpStatusCode, HttpStatusText};
+pub use request::{HttpMethod, HttpRequest, HttpRequestSpans};
+pub use response::{HttpResponse, HttpResponseSpans, HttpStatusCode, HttpStatusText};
 pub use uri::HttpUri;
 pub use version::HttpVersion;
