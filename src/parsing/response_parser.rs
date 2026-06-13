@@ -1,8 +1,8 @@
 use crate::{
     parsing::{
+        message_parser::HttpMessageParser,
         models::{HttpHeader, HttpResponse, HttpResponseSpans, HttpStatusCode, HttpVersion},
         parse_errors::ParsingError,
-        parser::Parser,
     },
     span::{get_spanned_span, get_spanned_value},
     HttpStatusText, ResponseTokenKind, Spanned, Token,
@@ -233,7 +233,7 @@ impl<'input> HttpResponseParser<'input> {
     }
 }
 
-impl<'input> Parser<ResponseTokenKind, HttpResponse, HttpResponseSpans>
+impl<'input> HttpMessageParser<ResponseTokenKind, HttpResponse, HttpResponseSpans>
     for HttpResponseParser<'input>
 {
     fn parse(

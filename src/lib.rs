@@ -1,5 +1,6 @@
 use crate::parsing::{
-    parser::Parser, request_parser::HttpRequestParser, response_parser::HttpResponseParser,
+    message_parser::HttpMessageParser, request_parser::HttpRequestParser,
+    response_parser::HttpResponseParser,
 };
 
 mod lexing;

@@ -1,8 +1,8 @@
 use crate::{
     lexing::{request_lexer::RequestTokenKind, tokens::Token},
     parsing::{
+        message_parser::HttpMessageParser,
         models::{HttpHeader, HttpMethod, HttpRequest, HttpUri, HttpVersion},
-        parser::Parser,
     },
     span::{get_spanned_lexme, get_spanned_span, get_spanned_value},
     HttpRequestSpans, Spanned,
@@ -225,7 +225,9 @@ impl<'input> HttpRequestParser<'input> {
     }
 }
 
-impl<'input> Parser<RequestTokenKind, HttpRequest, HttpRequestSpans> for HttpRequestParser<'input> {
+impl<'input> HttpMessageParser<RequestTokenKind, HttpRequest, HttpRequestSpans>
+    for HttpRequestParser<'input>
+{
     fn parse(
         mut self,
         tokens: Vec<Token<RequestTokenKind>>,
