@@ -12,15 +12,20 @@ let src = "\
     body";
 
 let tokens = lex_request(src).expect("should produce tokens");
-let request = parse_request(src, tokens);
+let (request, request_spans) = parse_request(src, tokens).expect("should parse");
 
 assert_eq!(
-    Ok(HttpRequest::post(
-        "/hello",
+    HttpRequest::post(
+        "/",
         vec![("Host", "example.com").into()],
-        Some("body".to_string())
-    )),
+        Some("body".to_string()),
+    ),
     request
+);
+
+assert_eq!(
+    span(position(0, 1, 1), position(4, 1, 5)),
+    request_spans.method
 );
 ```
 

@@ -41,14 +41,25 @@ let src = "\
     body";
 
 let tokens = lex_request(src).expect("should produce tokens");
-let request = parse_request(src, tokens);
+let result = parse_request(src, tokens);
 
 assert_eq!(
-    Ok(HttpRequest::post(
-        "/hello",
-        vec![("Host", "example.com").into()],
-        Some("body".to_string())
+    Ok((
+        // The parsed request
+        HttpRequest::post(
+            "/",
+            vec![("Host", "example.com").into()],
+            Some("body".to_string()),
+        ),
+        // The parsed span information
+        HttpRequestSpans {
+            method: span(position(0, 1, 1), position(4, 1, 5)),
+            uri: span(position(5, 1, 6), position(6, 1, 7)),
+            http_version: span(position(7, 1, 8), position(15, 1, 16)),
+            headers: vec![span(position(17, 2, 1), position(34, 2, 18))],
+            body: Some(span(position(38, 4, 1), position(42, 4, 1)))
+        }
     )),
-    request
+    result
 );
 ```
