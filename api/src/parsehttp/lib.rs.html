@@ -14,11 +14,11 @@
 <a href=#14 id=14 data-nosnippet>14</a><span class="kw">pub use </span><span class="kw">crate</span>::lexing::response_lexer::ResponseTokenKind;
 <a href=#15 id=15 data-nosnippet>15</a><span class="kw">pub use </span><span class="kw">crate</span>::lexing::tokens::Token;
 <a href=#16 id=16 data-nosnippet>16</a><span class="kw">pub use </span><span class="kw">crate</span>::parsing::models::{
-<a href=#17 id=17 data-nosnippet>17</a>    HttpHeader, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode, HttpStatusText, HttpUri,
-<a href=#18 id=18 data-nosnippet>18</a>    HttpVersion,
+<a href=#17 id=17 data-nosnippet>17</a>    HttpHeader, HttpMethod, HttpRequest, HttpRequestSpans, HttpResponse, HttpResponseSpans,
+<a href=#18 id=18 data-nosnippet>18</a>    HttpStatusCode, HttpStatusText, HttpUri, HttpVersion,
 <a href=#19 id=19 data-nosnippet>19</a>};
 <a href=#20 id=20 data-nosnippet>20</a><span class="kw">pub use </span><span class="kw">crate</span>::parsing::parse_errors::ParsingError;
-<a href=#21 id=21 data-nosnippet>21</a><span class="kw">pub use </span><span class="kw">crate</span>::span::{position, span, Span};
+<a href=#21 id=21 data-nosnippet>21</a><span class="kw">pub use </span><span class="kw">crate</span>::span::{position, span, Span, Spanned};
 <a href=#22 id=22 data-nosnippet>22</a>
 <a href=#23 id=23 data-nosnippet>23</a><span class="doccomment">/// Lex a HTTP request from a string in to tokens
 <a href=#24 id=24 data-nosnippet>24</a></span><span class="kw">pub fn </span>lex_request(src: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Token&lt;RequestTokenKind&gt;&gt;, LexError&gt; {
@@ -34,7 +34,7 @@
 <a href=#34 id=34 data-nosnippet>34</a></span><span class="kw">pub fn </span>parse_request(
 <a href=#35 id=35 data-nosnippet>35</a>    src: <span class="kw-2">&amp;</span>str,
 <a href=#36 id=36 data-nosnippet>36</a>    tokens: Vec&lt;Token&lt;RequestTokenKind&gt;&gt;,
-<a href=#37 id=37 data-nosnippet>37</a>) -&gt; <span class="prelude-ty">Result</span>&lt;HttpRequest, ParsingError&gt; {
+<a href=#37 id=37 data-nosnippet>37</a>) -&gt; <span class="prelude-ty">Result</span>&lt;(HttpRequest, HttpRequestSpans), ParsingError&gt; {
 <a href=#38 id=38 data-nosnippet>38</a>    HttpRequestParser::new(src).parse(tokens)
 <a href=#39 id=39 data-nosnippet>39</a>}
 <a href=#40 id=40 data-nosnippet>40</a>
@@ -42,7 +42,7 @@
 <a href=#42 id=42 data-nosnippet>42</a></span><span class="kw">pub fn </span>parse_response(
 <a href=#43 id=43 data-nosnippet>43</a>    src: <span class="kw-2">&amp;</span>str,
 <a href=#44 id=44 data-nosnippet>44</a>    tokens: Vec&lt;Token&lt;ResponseTokenKind&gt;&gt;,
-<a href=#45 id=45 data-nosnippet>45</a>) -&gt; <span class="prelude-ty">Result</span>&lt;HttpResponse, ParsingError&gt; {
+<a href=#45 id=45 data-nosnippet>45</a>) -&gt; <span class="prelude-ty">Result</span>&lt;(HttpResponse, HttpResponseSpans), ParsingError&gt; {
 <a href=#46 id=46 data-nosnippet>46</a>    HttpResponseParser::new(src).parse(tokens)
 <a href=#47 id=47 data-nosnippet>47</a>}
 </code></pre></div></section></main></body></html>

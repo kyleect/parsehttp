@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b8bc4f39.js";
+            window.path_to_searchindex_js = "searchindex-e430436f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-988c100e.js"></script>
@@ -176,6 +176,34 @@
                     <main>
                         <h1 id="parsing"><a class="header" href="#parsing">Parsing</a></h1>
 <p>Convert a <code>Vec&lt;Token&lt;T&gt;</code> in to either an <code>parsehttp::HttpRequest</code> or <code>parsehttp::HttpResponse</code>.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct HttpRequest {
+    pub uri: HttpUri,
+    pub method: HttpMethod,
+    pub http_version: HttpVersion,
+    pub headers: Vec&lt;HttpHeader&gt;,
+    pub body: Option&lt;String&gt;,
+    pub spans: HttpRequestSpans,
+}
+
+pub struct HttpMethod(String);
+
+pub struct HttpUri(String);
+
+pub struct HttpVersion(String);
+
+pub struct HttpHeader(String, String);
+
+pub struct HttpRequestSpans {
+    pub uri: Span,
+    pub method: Span,
+    pub http_version: Span,
+    pub headers: Vec&lt;Span&gt;,
+    pub body: Option&lt;Span&gt;,
+}
+<span class="boring">}</span></code></pre>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use parsehttp::{lex_request, parse_request, HttpRequest};
